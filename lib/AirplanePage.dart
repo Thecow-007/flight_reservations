@@ -3,21 +3,21 @@ import 'database.dart';
 import 'Airplane.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const AirplanePage());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class AirplanePage extends StatelessWidget {
+  const AirplanePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'LabWeek6',
+      title: 'Airplane List',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'ToDo List'),
+      home: const MyHomePage(title: 'Airplane List'),
     );
   }
 }
@@ -47,7 +47,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void loadDatabase() async {
-    final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+    final database = await $FloorAppDatabase
+        .databaseBuilder('FlightReservations.db')
+        .build();
     DAO = database.airplaneDAO;
     allItems = await DAO.selectAllAirplanes();
     setState(() {});
@@ -55,7 +57,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> addItem() async {
     final int nextId = (await DAO.selectAllAirplanes()).length + 1;
-    Airplane todo = Airplane(nextId, nameController.text, numOfPassengersController.text as int, maxSpeedController.text as double, rangeController.text as double);
+    Airplane todo = Airplane(nextId, nameController.text, numOfPassengersController.text as int,
+                    maxSpeedController.text as double, rangeController.text as double);
     await DAO.insertAirplane(todo);
     setState(() {
       nameController.text = '';
