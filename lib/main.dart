@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => MyHomePage(title: 'Flight Reservations'),
-        '/second': (context) => FlightPage(),
+        '/flight': (context) => FlightPage(),
         '/plane': (context) => AirplanePage(),
       },
     );
@@ -96,22 +96,27 @@ class _MyHomePageState extends State<MyHomePage> {
                         style: TextStyle(fontSize: 30.0, color: Colors.white))
                   ],
                 ),
-                Stack(
-                  alignment: AlignmentDirectional.center,
-                  children: [
-                    Image.asset("Photos/planes.png",
-                        height: 200.0, width: 200.0),
-                    Text("Airplanes",
-                        style: TextStyle(fontSize: 30.0, color: Colors.white))
-                  ],
-                )
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/plane");
+                    },
+                    child: Stack(
+                      alignment: AlignmentDirectional.center,
+                      children: [
+                        Image.asset("Photos/planes.png",
+                            height: 200.0, width: 200.0),
+                        Text("Airplanes",
+                            style:
+                                TextStyle(fontSize: 30.0, color: Colors.white))
+                      ],
+                    )),
               ],
             ),
 
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, "/second");
+                    Navigator.pushNamed(context, "/flight");
                   },
                   child: Stack(
                     alignment: AlignmentDirectional.center,
