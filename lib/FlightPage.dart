@@ -19,13 +19,13 @@ class ToDoState extends State<FlightPage> {
   late TextEditingController _arrivalTime;
   late FlightDAO flightDAO;
   late AirplaneDAO airplaneDAO;
-  late List<Airplane> planeList;
+  late List<Airplane> planeList = [];
   Airplane? selectedAirplane;
   // List<String> items =  ["Add your to do items here, long press to delete the item"] ;
   // List<String> items = [];
 
   late var selectedItem = null;
-  late List<Flight> fights = [];
+  late List<Flight> flights = [];
   @override
   void initState() {
     super.initState();
@@ -53,7 +53,7 @@ class ToDoState extends State<FlightPage> {
     flightDAO = database.flightDAO;
     airplaneDAO = database.airplaneDAO;
 
-    fights = await flightDAO.selectAllFlight();
+    flights = await flightDAO.selectAllFlight();
     planeList = await airplaneDAO.selectAllAirplanes();
     // items.clear();
     // for(int i = 0; i < todos.length; i++ ){
@@ -188,18 +188,18 @@ class ToDoState extends State<FlightPage> {
         ]),
         Expanded(
             child: ListView.builder(
-                itemCount: fights.length,
+                itemCount: flights.length,
                 itemBuilder: (context, rowNum) {
                   return GestureDetector(
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text('${rowNum + 1}', textAlign: TextAlign.left),
-                            Text(fights[rowNum].arrivalTime, textAlign: TextAlign.right)
+                            Text(flights[rowNum].arrivalTime, textAlign: TextAlign.right)
                           ]),
                       onTap: () {
                         setState(() {
-                          selectedItem = fights[rowNum];
+                          selectedItem = flights[rowNum];
                         });
 
                         // if(items.length == 1){
