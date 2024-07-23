@@ -82,15 +82,17 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Stack(
+                  alignment: AlignmentDirectional.center,
                   children: [
                     Image.asset("Photos/Customers.png", height:200.0, width:200.0),
-                    Text("Customers")
+                    Text("Customers", style: TextStyle(fontSize: 30.0, color: Colors.white))
                   ],
                 ),
                 Stack(
+                  alignment: AlignmentDirectional.center,
                   children: [
                     Image.asset("Photos/planes.png", height:200.0, width:200.0),
-                    Text("Airplanes")
+                    Text("Airplanes", style: TextStyle(fontSize: 30.0, color: Colors.white))
                   ],
                 )
               ],
@@ -99,15 +101,17 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Stack(
-                  children: [
+                  alignment: AlignmentDirectional.center,
+                  children: <Widget>[
                     Image.asset("Photos/flights.png", height: 200.0, width:200.0),
-                    Text("Flights")
+                    Text("Flights", style: TextStyle(fontSize: 30.0, color: Colors.white))
                   ],
                 ),
                 Stack(
-                  children: [
+                  alignment: AlignmentDirectional.center,
+                  children: <Widget>[
                     Image.asset("Photos/Rez.png", height:200.0, width:200.0),
-                    Text("Reservations")
+                    Text("Reservations", style: TextStyle(fontSize: 30.0, color: Colors.white))
                   ],
                 )
               ],
