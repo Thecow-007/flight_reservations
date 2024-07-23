@@ -7,6 +7,7 @@ import 'package:flight_reservations/SampleInserts.dart';
 import 'package:flutter/material.dart';
 
 import 'FlightPage.dart';
+import 'AirplanePage.dart';
 import 'ReservationDAO.dart';
 import 'database.dart';
 
@@ -28,9 +29,9 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-
         '/': (context) => MyHomePage(title: 'Flight Reservations'),
-        '/second': (context) =>  FlightPage(),
+        '/flight': (context) => FlightPage(),
+        '/plane': (context) => AirplanePage(),
       },
     );
   }
@@ -38,15 +39,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -59,7 +51,6 @@ class _MyHomePageState extends State<MyHomePage> {
   late CustomerDAO customerDAO;
   late FlightDAO flightDAO;
   late ReservationDAO reservationDAO;
-
 
   @override
   void initState() {
@@ -77,8 +68,8 @@ class _MyHomePageState extends State<MyHomePage> {
     flightDAO = database.flightDAO;
     reservationDAO = database.reservationDAO;
 
-    SampleInserts.insertSampleData(airplaneDAO, customerDAO, flightDAO, reservationDAO);
-
+    SampleInserts.insertSampleData(
+        airplaneDAO, customerDAO, flightDAO, reservationDAO);
   }
 
   @override
@@ -92,25 +83,59 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              'something',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            ElevatedButton(
-              onPressed: (){
-                Navigator.pushNamed(  context,"/second" );
-              },
-              child: Text(
-                "Flight Page",
-                style: TextStyle(
-                  color: Colors.pink,
-                  fontSize: 16,
+            //Customers + Airplanes Row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Stack(
+                  alignment: AlignmentDirectional.center,
+                  children: [
+                    Image.asset("Photos/Customers.png",
+                        height: 200.0, width: 200.0),
+                    Text("Customers",
+                        style: TextStyle(fontSize: 30.0, color: Colors.white))
+                  ],
                 ),
-              ),
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/plane");
+                    },
+                    child: Stack(
+                      alignment: AlignmentDirectional.center,
+                      children: [
+                        Image.asset("Photos/planes.png",
+                            height: 200.0, width: 200.0),
+                        Text("Airplanes",
+                            style:
+                                TextStyle(fontSize: 30.0, color: Colors.white))
+                      ],
+                    )),
+              ],
             ),
+
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, "/flight");
+                  },
+                  child: Stack(
+                    alignment: AlignmentDirectional.center,
+                    children: <Widget>[
+                      Image.asset("Photos/flights.png",
+                          height: 200.0, width: 200.0),
+                      Text("Flights",
+                          style: TextStyle(fontSize: 30.0, color: Colors.white))
+                    ],
+                  )),
+              Stack(
+                alignment: AlignmentDirectional.center,
+                children: <Widget>[
+                  Image.asset("Photos/Rez.png", height: 200.0, width: 200.0),
+                  Text("Reservations",
+                      style: TextStyle(fontSize: 30.0, color: Colors.white))
+                ],
+              ),
+            ]),
           ],
         ),
       ),
