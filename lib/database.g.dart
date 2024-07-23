@@ -215,7 +215,7 @@ class _$AirplaneDAO extends AirplaneDAO {
   }
 
   @override
-  Future<int> removeToDo(Airplane airplane) {
+  Future<int> removeAirplane(Airplane airplane) {
     return _airplaneDeletionAdapter.deleteAndReturnChangedRows(airplane);
   }
 }

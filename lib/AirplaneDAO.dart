@@ -14,7 +14,7 @@ abstract class AirplaneDAO {
   Future<int> insertAirplane(Airplane airplane);
 
   @delete
-  Future<int> removeToDo(Airplane airplane);
+  Future<int> removeAirplane(Airplane airplane);
 
   @Query("Delete * From Airplane")
   Future<int?> removeAllAirplane();
