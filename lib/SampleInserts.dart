@@ -37,12 +37,45 @@ class SampleInserts{
     int customer5Id = await customerDAO.insertCustomer(customer5);
 
     // Insert Flights
-    var flight1 = Flight(null, "New York", "Los Angeles", "2024-08-01 08:00", "2024-08-01 11:00", airplane1Id);
-    var flight2 = Flight(null, "Chicago", "Miami", "2024-08-02 14:00", "2024-08-02 18:00", airplane2Id);
-    var flight3 = Flight(null, "Dallas", "San Francisco", "2024-08-03 09:00", "2024-08-03 12:00", airplane3Id);
-    var flight4 = Flight(null, "Atlanta", "Seattle", "2024-08-04 10:00", "2024-08-04 13:00", airplane4Id);
-    var flight5 = Flight(null, "Houston", "Boston", "2024-08-05 11:00", "2024-08-05 15:00", airplane5Id);
+    var flight1 = Flight(
+        null,
+        "New York",
+        "Los Angeles",
+        Flight.dateTimeToTimestamp(DateTime.parse("2024-08-01 08:00:00")),
+        Flight.dateTimeToTimestamp(DateTime.parse("2024-08-01 11:00:00")),
+        airplane1Id);
 
+    var flight2 = Flight(
+        null,
+        "Chicago",
+        "Miami",
+        Flight.dateTimeToTimestamp(DateTime.parse("2024-08-02 14:00:00")),
+        Flight.dateTimeToTimestamp(DateTime.parse("2024-08-02 18:00:00")),
+        airplane2Id);
+
+    var flight3 = Flight(
+        null,
+        "Dallas",
+        "San Francisco",
+        Flight.dateTimeToTimestamp(DateTime.parse("2024-08-03 09:00:00")),
+        Flight.dateTimeToTimestamp(DateTime.parse("2024-08-03 12:00:00")),
+        airplane3Id);
+
+    var flight4 = Flight(
+        null,
+        "Atlanta",
+        "Seattle",
+        Flight.dateTimeToTimestamp(DateTime.parse("2024-08-04 10:00:00")),
+        Flight.dateTimeToTimestamp(DateTime.parse("2024-08-04 13:00:00")),
+        airplane4Id);
+
+    var flight5 = Flight(
+        null,
+        "Houston",
+        "Boston",
+        Flight.dateTimeToTimestamp(DateTime.parse("2024-08-05 11:00:00")),
+        Flight.dateTimeToTimestamp(DateTime.parse("2024-08-05 15:00:00")),
+        airplane5Id);
     int flight1Id = await flightDAO.insertFlight(flight1);
     int flight2Id = await flightDAO.insertFlight(flight2);
     int flight3Id = await flightDAO.insertFlight(flight3);

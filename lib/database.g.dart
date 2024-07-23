@@ -106,7 +106,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Customer` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `firstname` TEXT NOT NULL, `lastname` TEXT NOT NULL, `address` TEXT NOT NULL, `birthday` TEXT NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Flight` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `departureCity` TEXT NOT NULL, `destinationCity` TEXT NOT NULL, `departureTime` TEXT NOT NULL, `arrivalTime` TEXT NOT NULL, `airplaneId` INTEGER NOT NULL, FOREIGN KEY (`airplaneId`) REFERENCES `Airplane` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
+            'CREATE TABLE IF NOT EXISTS `Flight` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `departureCity` TEXT NOT NULL, `destinationCity` TEXT NOT NULL, `departureTime` INTEGER NOT NULL, `arrivalTime` INTEGER NOT NULL, `airplaneId` INTEGER NOT NULL, FOREIGN KEY (`airplaneId`) REFERENCES `Airplane` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Reservation` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `customerId` INTEGER NOT NULL, `flightId` INTEGER NOT NULL, `date` TEXT NOT NULL, FOREIGN KEY (`customerId`) REFERENCES `Customer` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, FOREIGN KEY (`flightId`) REFERENCES `Flight` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
 
@@ -365,8 +365,8 @@ class _$FlightDAO extends FlightDAO {
             row['id'] as int?,
             row['departureCity'] as String,
             row['destinationCity'] as String,
-            row['departureTime'] as String,
-            row['arrivalTime'] as String,
+            row['departureTime'] as int,
+            row['arrivalTime'] as int,
             row['airplaneId'] as int));
   }
 
@@ -377,8 +377,8 @@ class _$FlightDAO extends FlightDAO {
             row['id'] as int?,
             row['departureCity'] as String,
             row['destinationCity'] as String,
-            row['departureTime'] as String,
-            row['arrivalTime'] as String,
+            row['departureTime'] as int,
+            row['arrivalTime'] as int,
             row['airplaneId'] as int),
         arguments: [id],
         queryableName: 'Flight',
