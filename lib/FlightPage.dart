@@ -7,12 +7,12 @@ import 'Flight.dart';
 import 'FlightDAO.dart';
 import 'database.dart';
 
-class ToDo extends StatefulWidget {
+class FlightPage extends StatefulWidget {
   @override
-  State<ToDo> createState() => ToDoState();
+  State<FlightPage> createState() => ToDoState();
 }
 
-class ToDoState extends State<ToDo> {
+class ToDoState extends State<FlightPage> {
   late TextEditingController _departureCity;
   late TextEditingController _destinationCity;
   late TextEditingController _departureTime;
@@ -139,7 +139,7 @@ class ToDoState extends State<ToDo> {
     ]);
   }
 
-  Widget ToDoList() {
+  Widget FlightList() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -224,7 +224,7 @@ class ToDoState extends State<ToDo> {
     var size = MediaQuery.of(context).size;
     var height = size.height;
     var width = size.width;
-    Widget list = ToDoList();
+    Widget list = FlightList();
     Widget display = list;
     if ((width > height) && (width > 720)) {
       display = Row(children: [
@@ -239,7 +239,7 @@ class ToDoState extends State<ToDo> {
       ]);
     } else {
       if (selectedItem == null) {
-        display = ToDoList(); // reuse the code from the tablet Left side,
+        display = FlightList(); // reuse the code from the tablet Left side,
       } else {
         display = DetailsPage(); //reuse the code from the tablet Right side
       }
@@ -253,7 +253,7 @@ class ToDoState extends State<ToDo> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("To Do List"),
+        title: Text("Flight List"),
       ),
       body: Center(child: display),
     ); // //create a layout for this page using Column, Row, Stack() etc
