@@ -6,6 +6,7 @@ import 'package:flight_reservations/Reservation.dart';
 import 'package:flight_reservations/SampleInserts.dart';
 import 'package:flutter/material.dart';
 
+import 'FlightPage.dart';
 import 'ReservationDAO.dart';
 import 'database.dart';
 
@@ -25,7 +26,12 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flight Reservations'),
+      initialRoute: '/',
+      routes: {
+
+        '/': (context) => MyHomePage(title: 'Flight Reservations'),
+        '/second': (context) =>  FlightPage(),
+      },
     );
   }
 }
@@ -92,6 +98,18 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               'something',
               style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            ElevatedButton(
+              onPressed: (){
+                Navigator.pushNamed(  context,"/second" );
+              },
+              child: Text(
+                "Flight Page",
+                style: TextStyle(
+                  color: Colors.pink,
+                  fontSize: 16,
+                ),
+              ),
             ),
           ],
         ),

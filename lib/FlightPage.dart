@@ -7,12 +7,12 @@ import 'Flight.dart';
 import 'FlightDAO.dart';
 import 'database.dart';
 
-class ToDo extends StatefulWidget {
+class FlightPage extends StatefulWidget {
   @override
-  State<ToDo> createState() => ToDoState();
+  State<FlightPage> createState() => ToDoState();
 }
 
-class ToDoState extends State<ToDo> {
+class ToDoState extends State<FlightPage> {
   late TextEditingController _departureCity;
   late TextEditingController _destinationCity;
   late TextEditingController _departureTime;
