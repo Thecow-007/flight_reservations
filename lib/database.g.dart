@@ -319,6 +319,19 @@ class _$FlightDAO extends FlightDAO {
                   'airplaneId': item.airplaneId
                 },
             changeListener),
+        _flightUpdateAdapter = UpdateAdapter(
+            database,
+            'Flight',
+            ['id'],
+            (Flight item) => <String, Object?>{
+                  'id': item.id,
+                  'departureCity': item.departureCity,
+                  'destinationCity': item.destinationCity,
+                  'departureTime': item.departureTime,
+                  'arrivalTime': item.arrivalTime,
+                  'airplaneId': item.airplaneId
+                },
+            changeListener),
         _flightDeletionAdapter = DeletionAdapter(
             database,
             'Flight',
@@ -340,6 +353,8 @@ class _$FlightDAO extends FlightDAO {
   final QueryAdapter _queryAdapter;
 
   final InsertionAdapter<Flight> _flightInsertionAdapter;
+
+  final UpdateAdapter<Flight> _flightUpdateAdapter;
 
   final DeletionAdapter<Flight> _flightDeletionAdapter;
 
@@ -380,6 +395,11 @@ class _$FlightDAO extends FlightDAO {
   Future<int> insertFlight(Flight flight) {
     return _flightInsertionAdapter.insertAndReturnId(
         flight, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updateFlight(Flight flight) async {
+    await _flightUpdateAdapter.update(flight, OnConflictStrategy.abort);
   }
 
   @override
