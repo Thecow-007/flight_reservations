@@ -47,8 +47,9 @@ class ToDoState extends State<FlightPage> {
   }
 
   Future<void> load() async {
-    final database =
-        await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+    final database = await $FloorAppDatabase
+        .databaseBuilder('FlightReservations.db')
+        .build();
 
     flightDAO = database.flightDAO;
     airplaneDAO = database.airplaneDAO;
@@ -158,10 +159,10 @@ class ToDoState extends State<FlightPage> {
           ),
           DropdownButton<Airplane>(
             hint: Text('Select Airplane'),
-            value: selectedItem,
+            value: selectedAirplane,
             onChanged: (Airplane? newValue) {
               setState(() {
-                selectedItem = newValue;
+                selectedAirplane = newValue;
               });
             },
             items: planeList.map<DropdownMenuItem<Airplane>>((Airplane airplane) {
