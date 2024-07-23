@@ -18,4 +18,7 @@ abstract class FlightDAO {
 
   @Query("Delete * From Flight")
   Future<int?> removeAllToDo();
+
+  @update
+  Future<void> updateFlight(Flight flight);
 }
