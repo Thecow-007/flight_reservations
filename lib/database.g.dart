@@ -475,6 +475,20 @@ class _$ReservationDAO extends ReservationDAO {
   }
 
   @override
+  Future<void> deleteReservationByFlightId(int flightId) async {
+    await _queryAdapter.queryNoReturn(
+        'DELETE FROM Reservation WHERE flightId = ?1',
+        arguments: [flightId]);
+  }
+
+  @override
+  Future<void> deleteReservationByCustomerId(int customerId) async {
+    await _queryAdapter.queryNoReturn(
+        'DELETE FROM Reservation WHERE customerId = ?1',
+        arguments: [customerId]);
+  }
+
+  @override
   Future<int> insertReservation(Reservation reservation) {
     return _reservationInsertionAdapter.insertAndReturnId(
         reservation, OnConflictStrategy.abort);

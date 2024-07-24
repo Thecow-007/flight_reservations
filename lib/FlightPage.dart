@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'DBConnection.dart';
 import 'Flight.dart';
 import 'FlightDAO.dart';
+import 'ReservationDAO.dart';
 import 'database.dart';
 
 class FlightPage extends StatefulWidget {
@@ -21,6 +22,7 @@ class ToDoState extends State<FlightPage> {
   DateTime? _arrivalTime;
   late FlightDAO flightDAO;
   late AirplaneDAO airplaneDAO;
+  late ReservationDAO reservationDAO;
   late List<Airplane> planeList = [];
   Airplane? selectedAirplane;
   Flight? selectedItem;
@@ -51,6 +53,7 @@ class ToDoState extends State<FlightPage> {
 
     flightDAO = database.flightDAO;
     airplaneDAO = database.airplaneDAO;
+    reservationDAO = database.reservationDAO;
 
     flights = await flightDAO.selectAllFlight();
     planeList = await airplaneDAO.selectAllAirplanes();
@@ -72,6 +75,7 @@ class ToDoState extends State<FlightPage> {
   }
 
   Future<void> deleteData(Flight flight) async {
+    await reservationDAO.deleteReservationByFlightId(flight.id??0);
     await flightDAO.removeFlight(flight);
     load();
   }
