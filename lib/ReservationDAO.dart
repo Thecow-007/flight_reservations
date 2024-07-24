@@ -18,4 +18,11 @@ abstract class ReservationDAO {
 
   @Query("Delete * From Reservation")
   Future<int?> removeAllReservation();
+
+  @Query("DELETE FROM Reservation WHERE flightId = :flightId")
+  Future<void> deleteReservationByFlightId(int flightId);
+
+  @Query("DELETE FROM Reservation WHERE customerId = :customerId")
+  Future<void> deleteReservationByCustomerId(int customerId);
+
 }
