@@ -165,6 +165,18 @@ class _$AirplaneDAO extends AirplaneDAO {
                   'maxSpeed': item.maxSpeed,
                   'range': item.range
                 },
+            changeListener),
+        _airplaneUpdateAdapter = UpdateAdapter(
+            database,
+            'Airplane',
+            ['id'],
+            (Airplane item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'numberOfPassengers': item.numberOfPassengers,
+                  'maxSpeed': item.maxSpeed,
+                  'range': item.range
+                },
             changeListener);
 
   final sqflite.DatabaseExecutor database;
@@ -176,6 +188,8 @@ class _$AirplaneDAO extends AirplaneDAO {
   final InsertionAdapter<Airplane> _airplaneInsertionAdapter;
 
   final DeletionAdapter<Airplane> _airplaneDeletionAdapter;
+
+  final UpdateAdapter<Airplane> _airplaneUpdateAdapter;
 
   @override
   Future<List<Airplane>> selectAllAirplanes() async {
@@ -217,6 +231,11 @@ class _$AirplaneDAO extends AirplaneDAO {
   @override
   Future<int> removeAirplane(Airplane airplane) {
     return _airplaneDeletionAdapter.deleteAndReturnChangedRows(airplane);
+  }
+
+  @override
+  Future<void> updateAirplane(Airplane airplane) async {
+    await _airplaneUpdateAdapter.update(airplane, OnConflictStrategy.abort);
   }
 }
 
