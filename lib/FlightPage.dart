@@ -37,10 +37,8 @@ class ToDoState extends State<FlightPage> {
     _departureCity = TextEditingController();
     _destinationCity = TextEditingController();
 
-
     load();
     loadEncrypted();
-
   }
 
   @override
@@ -61,8 +59,7 @@ class ToDoState extends State<FlightPage> {
 
     if (login != null) {
       SnackBar snackBar = SnackBar(
-          content:
-          Text('Welcome back '+ login),
+          content: Text('Welcome back ' + login),
           action: SnackBarAction(
               label: 'Clear saved data',
               onPressed: () {
@@ -86,8 +83,7 @@ class ToDoState extends State<FlightPage> {
   }
 
   void showSnackBar(String message) {
-    final snackBar = SnackBar(
-        content: Text(message));
+    final snackBar = SnackBar(content: Text(message));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
@@ -196,55 +192,76 @@ class ToDoState extends State<FlightPage> {
               );
             }).toList(),
           ),
-          ElevatedButton(
-            child: Text("Update"),
-            onPressed: () {
-              if (selectedItem != null) {
-                final updatedFlight = Flight(
-                  selectedItem!.id,
-                  _departureCity.value.text,
-                  _destinationCity.value.text,
-                  Flight.dateTimeToTimestamp(_departureTime!),
-                  Flight.dateTimeToTimestamp(_arrivalTime!),
-                  selectedAirplane!.id ?? 0,
+          Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+            ElevatedButton(
+              child: Text("Update"),
+              onPressed: () {
+                if (_departureCity.text.isNotEmpty &&
+                    _destinationCity.text.isNotEmpty &&
+                    _departureTime != null &&
+                    _arrivalTime != null &&
+                    selectedAirplane != null) {
+                  if (selectedItem != null) {
+                    final updatedFlight = Flight(
+                      selectedItem!.id,
+                      _departureCity.text,
+                      _destinationCity.text,
+                      Flight.dateTimeToTimestamp(_departureTime!),
+                      Flight.dateTimeToTimestamp(_arrivalTime!),
+                      selectedAirplane!.id ?? 0,
+                    );
+                    updateData(updatedFlight);
+                    setState(() {
+                      selectedItem = null;
+                    });
+                    showSnackBar("Successfully updated the flight");
+                  }
+                } else {
+                  showSnackBar("Please fill out the entire form");
+                }
+              },
+            ),
+            ElevatedButton(
+              child: Text("Delete"),
+              onPressed: () {
+                showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    title: const Text('Delete the Flight'),
+                    content:
+                        const Text('Are you sure you want to delete the item?'),
+                    actions: <Widget>[
+                      ElevatedButton(
+                        onPressed: () {
+                          deleteData(selectedItem!);
+                          Navigator.pop(context);
+                          setState(() {
+                            selectedItem = null;
+                          });
+                          showSnackBar("Successfully deleted the flight");
+                        },
+                        child: Text("Yes"),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text("No"),
+                      ),
+                    ],
+                  ),
                 );
-                updateData(updatedFlight);
-                setState(() {
-                  selectedItem = null;
-                });
-              }
-            },
-          ),
+              },
+            ),
+          ]),
           ElevatedButton(
-            child: Text("Delete"),
+            child: Text("Cancel"),
             onPressed: () {
               setState(() {
-                showDialog<String>(
-                    context: context,
-                    builder: (BuildContext context) => AlertDialog(
-                          title: const Text('Delete the Flight'),
-                          content: const Text(
-                              'Do you sure you want to delete the item'),
-                          actions: <Widget>[
-                            ElevatedButton(
-                                onPressed: () {
-                                  deleteData(selectedItem!);
-                                  Navigator.pop(context);
-                                  setState(() {
-                                    selectedItem = null;
-                                  });
-                                },
-                                child: Text("Yes")),
-                            ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Text("No"))
-                          ],
-                        ));
+                selectedItem = null;
               });
             },
-          )
+          ),
         ],
       );
     }
@@ -309,34 +326,44 @@ class ToDoState extends State<FlightPage> {
                 );
               }).toList(),
             ),
-            SizedBox(height: 8.0),
-            ElevatedButton(
-              child: Text("Add Flight"),
-              onPressed: () {
-                insertData();
-                setState(() {
-                  _departureCity.text = "";
-                  _destinationCity.text = "";
-                  _departureTime = null;
-                  _arrivalTime = null;
-                  selectedAirplane = null;
-                  _showAddFlight = false;
-                });
-              },
-            ),
-            ElevatedButton(
-              child: Text("Cancel"),
-              onPressed: () {
-                setState(() {
-                  _departureCity.text = "";
-                  _destinationCity.text = "";
-                  _departureTime = null;
-                  _arrivalTime = null;
-                  selectedAirplane = null;
-                  _showAddFlight = false;
-                });
-              },
-            ),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              ElevatedButton(
+                child: Text("Add Flight"),
+                onPressed: () {
+                  if (_departureCity.text != null &&
+                      _destinationCity.text != null &&
+                      _departureTime != null &&
+                      _arrivalTime != null &&
+                      selectedAirplane != null) {
+                    insertData();
+                    setState(() {
+                      _departureCity.text = "";
+                      _destinationCity.text = "";
+                      _departureTime = null;
+                      _arrivalTime = null;
+                      selectedAirplane = null;
+                      _showAddFlight = false;
+                    });
+                    showSnackBar("Successfully add the new flight");
+                  } else {
+                    showSnackBar("Please fill out the entire form");
+                  }
+                },
+              ),
+              ElevatedButton(
+                child: Text("Cancel"),
+                onPressed: () {
+                  setState(() {
+                    _departureCity.text = "";
+                    _destinationCity.text = "";
+                    _departureTime = null;
+                    _arrivalTime = null;
+                    selectedAirplane = null;
+                    _showAddFlight = false;
+                  });
+                },
+              )
+            ])
           ],
         )
       ],
@@ -377,7 +404,6 @@ class ToDoState extends State<FlightPage> {
     );
   }
 
-
   Widget FlightList() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -396,6 +422,9 @@ class ToDoState extends State<FlightPage> {
             });
           },
         ),
+        Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [Text('Departure Time'), Text('Departure City')]),
         Expanded(
           child: ListView.builder(
             itemCount: flights.length,
@@ -404,13 +433,16 @@ class ToDoState extends State<FlightPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('${rowNum + 1}', textAlign: TextAlign.left),
                     Text(
                       flights[rowNum]
-                          .getArrivalDateTime()
+                          .getDepartureDateTime()
                           .toLocal()
                           .toString()
                           .split(' ')[0],
+                      textAlign: TextAlign.right,
+                    ),
+                    Text(
+                      flights[rowNum].departureCity,
                       textAlign: TextAlign.right,
                     ),
                   ],
