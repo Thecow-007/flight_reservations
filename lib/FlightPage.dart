@@ -4,7 +4,6 @@ import 'package:flight_reservations/AirplaneDAO.dart';
 import 'package:flutter/material.dart';
 
 import 'DBConnection.dart';
-import 'DataRepository.dart';
 import 'Flight.dart';
 import 'FlightDAO.dart';
 import 'ReservationDAO.dart';
@@ -42,15 +41,6 @@ class ToDoState extends State<FlightPage> {
     load();
     loadEncrypted();
 
-    if (DataRepository.login != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showSnackBar("Welcome Back " + (DataRepository.login ?? ''));
-      });
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showSnackBar("Please enter your name first!");
-      });
-    }
   }
 
   @override
@@ -62,30 +52,43 @@ class ToDoState extends State<FlightPage> {
   }
 
   void loadEncrypted() async {
-    DataRepository.loadEncrypted();
-    setState(() {
-      _login.text = DataRepository.login??'';
-    });
+    EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
+    final encryptedResult = await prefs.getInstance();
+    var login = encryptedResult.getString("login");
+    if (login != null) {
+      _login.text = login;
+    }
+
+    if (login != null) {
+      SnackBar snackBar = SnackBar(
+          content:
+          Text('Welcome back '+ login),
+          action: SnackBarAction(
+              label: 'Clear saved data',
+              onPressed: () {
+                _login.text = "";
+                cleanData();
+              }));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
+  void saveEncrypted() async {
+    EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
+    final encryptedResult = await prefs.getInstance();
+    encryptedResult.setString("login", _login.text);
+  }
+
+  void cleanData() async {
+    EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
+    final encryptedResult = await prefs.getInstance();
+    await encryptedResult.remove("login");
   }
 
   void showSnackBar(String message) {
     final snackBar = SnackBar(
-        content: Text(message),
-        action: SnackBarAction(
-            label: 'Clear saved data',
-            onPressed: () {
-              _login.text = "";
-              cleanData();
-            }));
+        content: Text(message));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  void cleanData() async {
-    DataRepository.cleanData();
-  }
-
-  void saveEncrypted() async {
-    DataRepository.saveEncrypted(_login.text);
   }
 
   Future<void> load() async {
@@ -353,11 +356,14 @@ class ToDoState extends State<FlightPage> {
           ),
         ),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             saveEncrypted();
-            loadEncrypted();
-            var name = DataRepository.login??'';
-            showSnackBar("Successfully login as " +name);
+            EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
+            final encryptedResult = await prefs.getInstance();
+            var login = encryptedResult.getString("login");
+            if (login != null) {
+              showSnackBar("Successfully login as " + login);
+            }
           },
           child: Text(
             "Login",
