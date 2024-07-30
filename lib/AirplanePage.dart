@@ -35,6 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var DAO;
   var selectedItem;
   var selectedItemIndex;
+  bool addPageRequest = false;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController numOfPassengersController = TextEditingController();
   final TextEditingController maxSpeedController = TextEditingController();
@@ -79,11 +80,15 @@ class _MyHomePageState extends State<MyHomePage> {
     loadDatabase();
   }
 
-  Widget AirplaneList() {
+  Widget AddPage() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text('Airplane List', style: TextStyle(fontSize: 30)),
+        const Text(
+          'Add an Airplane',
+          style: TextStyle(fontSize: 30),
+        ),
+        const SizedBox(height: 20),
         Row(
           children: [
             Expanded(
@@ -97,6 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
+        const SizedBox(height: 10),
         Row(
           children: [
             Expanded(
@@ -110,6 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
+        const SizedBox(height: 10),
         Row(
           children: [
             Expanded(
@@ -123,6 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
+        const SizedBox(height: 10),
         Row(
           children: [
             Expanded(
@@ -136,10 +144,47 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
+        const SizedBox(height: 20),
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
               onPressed: addItem,
+              child: const Text("Add Airplane"),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              addPageRequest = false;
+            });
+          },
+          child: const Text("Back to List"),
+        ),
+      ],
+    );
+  }
+
+  Widget AirplaneList() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        const Text('Airplane List', style: TextStyle(fontSize: 30)),
+        Row(
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  nameController.text = '';
+                  numOfPassengersController.text = '';
+                  maxSpeedController.text = '';
+                  rangeController.text = '';
+                  selectedItem = null;
+                  addPageRequest = true; // Show AddPage
+                });
+              },
               child: const Text("Add Airplane"),
             ),
           ],
@@ -182,22 +227,22 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           TextField(
             controller: nameController,
-            decoration: InputDecoration(labelText: 'Name'),
+            decoration: const InputDecoration(labelText: 'Name'),
           ),
           TextField(
             controller: numOfPassengersController,
-            decoration: InputDecoration(labelText: '# of Passengers'),
+            decoration: const InputDecoration(labelText: '# of Passengers'),
           ),
           TextField(
             controller: maxSpeedController,
-            decoration: InputDecoration(labelText: 'Max Speed'),
+            decoration: const InputDecoration(labelText: 'Max Speed'),
           ),
           TextField(
             controller: rangeController,
-            decoration: InputDecoration(labelText: 'Range'),
+            decoration: const InputDecoration(labelText: 'Range'),
           ),
           ElevatedButton(
-            child: Text("Update"),
+            child: const Text("Update"),
             onPressed: () {
               if (selectedItem != null) {
                 final updatedItem = Airplane(
@@ -215,7 +260,7 @@ class _MyHomePageState extends State<MyHomePage> {
             },
           ),
           ElevatedButton(
-            child: Text("Delete"),
+            child: const Text("Delete"),
             onPressed: () {
               setState(() {
                 showDialog<String>(
@@ -232,19 +277,19 @@ class _MyHomePageState extends State<MyHomePage> {
                                 selectedItem = null;
                               });
                             },
-                            child: Text("Yes")),
+                            child: const Text("Yes")),
                         ElevatedButton(
                             onPressed: () {
                               Navigator.pop(context);
                             },
-                            child: Text("No"))
+                            child: const Text("No"))
                       ],
                     ));
               });
             },
           ),
           ElevatedButton(
-            child: Text("Go Back"),
+            child: const Text("Go Back"),
             onPressed: () {
               if (selectedItem != null) {
                 setState(() {
@@ -260,18 +305,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       );
     }
-    return Column(children: [
+    return const Column(children: [
       Text("No item selected"),
     ]);
-  }
-
-  int selectedIndex = 0;
-  void onItemTapped(int index) {
-    setState(() {
-      selectedIndex = index;
-      // Reset selectedItem when switching tabs
-      selectedItem = null;
-    });
   }
 
   @override
@@ -282,23 +318,24 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget menu = AirplaneList();
     Widget display = menu;
 
-    if ((width > height) && (width > 720)) {
-      display = Row(
-        children: [
-          Expanded(
-            flex: 1,
-            child: menu,
-          ),
-          Expanded(
-            flex: 3,
-            child: detailsPage(),
-          ),
-        ],
-      );
-    } else if (selectedItem != null) {
-      display = detailsPage();
-    }
-
+    if (addPageRequest == true) {
+      display = AddPage();
+    } else if ((width > height) && (width > 720)) {
+        display = Row(
+          children: [
+            Expanded(
+              flex: 1,
+              child: menu,
+            ),
+            Expanded(
+              flex: 3,
+              child: detailsPage(),
+            ),
+          ],
+        );
+      } else if (selectedItem != null) {
+          display = detailsPage();
+      }
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
