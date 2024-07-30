@@ -31,13 +31,11 @@ class MyApp extends StatelessWidget {
       home: const MyHomePage(title: 'Flight Reservations'),
       initialRoute: '/',
       routes: {
-        '/': (context) => MyHomePage(title: 'Flight Reservations'),
+        // '/': (context) => MyHomePage(title: 'Flight Reservations'),
         '/flight': (context) => FlightPage(),
         '/plane': (context) => AirplanePage(),
         '/reservations': (context) => ReservationPage(),
         
-      },
-
       },
     );
   }
