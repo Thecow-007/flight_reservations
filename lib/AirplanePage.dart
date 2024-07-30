@@ -225,6 +225,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
       return Column(
         children: [
+          const Text(
+            'Update Airplane',
+            style: TextStyle(fontSize: 30),
+          ),
           TextField(
             controller: nameController,
             decoration: const InputDecoration(labelText: 'Name'),
@@ -324,11 +328,11 @@ class _MyHomePageState extends State<MyHomePage> {
         display = Row(
           children: [
             Expanded(
-              flex: 1,
+              flex: 3,
               child: menu,
             ),
             Expanded(
-              flex: 3,
+              flex: 1,
               child: detailsPage(),
             ),
           ],
