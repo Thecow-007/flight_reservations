@@ -6,6 +6,12 @@ import 'package:flight_reservations/Reservation.dart';
 import 'package:flight_reservations/SampleInserts.dart';
 import 'package:flutter/material.dart';
 
+<<<<<<< Updated upstream
+=======
+import 'FlightPage.dart';
+import 'AirplanePage.dart';
+import 'ReservationPage.dart';
+>>>>>>> Stashed changes
 import 'ReservationDAO.dart';
 import 'database.dart';
 
@@ -16,7 +22,7 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,7 +31,17 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+<<<<<<< Updated upstream
       home: const MyHomePage(title: 'Flight Reservations'),
+=======
+      initialRoute: '/',
+      routes: {
+        '/': (context) => MyHomePage(title: 'Flight Reservations'),
+        '/flight': (context) => FlightPage(),
+        '/plane': (context) => AirplanePage(),
+        '/reservations': (context) => ReservationPage(),
+      },
+>>>>>>> Stashed changes
     );
   }
 }
@@ -86,6 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+<<<<<<< Updated upstream
             const Text(
               'You have pushed the button this many times:',
             ),
@@ -93,6 +110,66 @@ class _MyHomePageState extends State<MyHomePage> {
               'something',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+=======
+            //Customers + Airplanes Row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Stack(
+                  alignment: AlignmentDirectional.center,
+                  children: [
+                    Image.asset("Photos/Customers.png",
+                        height: 200.0, width: 200.0),
+                    Text("Customers",
+                        style: TextStyle(fontSize: 30.0, color: Colors.white))
+                  ],
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/plane");
+                    },
+                    child: Stack(
+                      alignment: AlignmentDirectional.center,
+                      children: [
+                        Image.asset("Photos/planes.png",
+                            height: 200.0, width: 200.0),
+                        Text("Airplanes",
+                            style:
+                            TextStyle(fontSize: 30.0, color: Colors.white))
+                      ],
+                    )),
+              ],
+            ),
+
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, "/flight");
+                  },
+                  child: Stack(
+                    alignment: AlignmentDirectional.center,
+                    children: <Widget>[
+                      Image.asset("Photos/flights.png",
+                          height: 200.0, width: 200.0),
+                      Text("Flights",
+                          style: TextStyle(fontSize: 30.0, color: Colors.white))
+                    ],
+                  )),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, "/reservations");
+                },
+                child: Stack(
+                  alignment: AlignmentDirectional.center,
+                  children: <Widget>[
+                    Image.asset("Photos/Rez.png", height: 200.0, width: 200.0),
+                    Text("Reservations",
+                        style: TextStyle(fontSize: 30.0, color: Colors.white))
+                  ],
+                ),
+              ),
+            ]),
+>>>>>>> Stashed changes
           ],
         ),
       ),
