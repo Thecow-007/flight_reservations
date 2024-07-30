@@ -1,10 +1,10 @@
+import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flight_reservations/Airplane.dart';
 import 'package:flight_reservations/AirplaneDAO.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 import 'DBConnection.dart';
+import 'DataRepository.dart';
 import 'Flight.dart';
 import 'FlightDAO.dart';
 import 'ReservationDAO.dart';
@@ -16,6 +16,7 @@ class FlightPage extends StatefulWidget {
 }
 
 class ToDoState extends State<FlightPage> {
+  late TextEditingController _login;
   late TextEditingController _departureCity;
   late TextEditingController _destinationCity;
   DateTime? _departureTime;
@@ -28,22 +29,63 @@ class ToDoState extends State<FlightPage> {
   Flight? selectedItem;
   late List<Flight> flights = [];
 
-  bool _showAddFlight = false; // New state variable to track display mode
+  bool _showAddFlight = false;
 
   @override
   void initState() {
     super.initState();
+    _login = TextEditingController();
     _departureCity = TextEditingController();
     _destinationCity = TextEditingController();
 
+
     load();
+    loadEncrypted();
+
+    if (DataRepository.login != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showSnackBar("Welcome Back " + (DataRepository.login ?? ''));
+      });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showSnackBar("Please enter your name first!");
+      });
+    }
   }
 
   @override
   void dispose() {
+    _login.dispose();
     _departureCity.dispose();
     _destinationCity.dispose();
     super.dispose();
+  }
+
+  void loadEncrypted() async {
+    DataRepository.loadEncrypted();
+    setState(() {
+      _login.text = DataRepository.login??'';
+    });
+  }
+
+  void showSnackBar(String message) {
+    final snackBar = SnackBar(
+        content: Text(message),
+        action: SnackBarAction(
+            label: 'Clear saved data',
+            onPressed: () {
+              _login.text = "";
+              cleanData();
+            }));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void cleanData() async {
+    DataRepository.cleanData();
+  }
+
+  void saveEncrypted() async {
+    DataRepository.saveEncrypted(_login.text);
   }
 
   Future<void> load() async {
@@ -63,19 +105,20 @@ class ToDoState extends State<FlightPage> {
   Future<void> insertData() async {
     if (selectedAirplane != null) {
       final flight = Flight(
-          null,
-          _departureCity.value.text,
-          _destinationCity.value.text,
-          Flight.dateTimeToTimestamp(_departureTime!),
-          Flight.dateTimeToTimestamp(_arrivalTime!),
-          selectedAirplane!.id ?? 0);
+        null,
+        _departureCity.value.text,
+        _destinationCity.value.text,
+        Flight.dateTimeToTimestamp(_departureTime!),
+        Flight.dateTimeToTimestamp(_arrivalTime!),
+        selectedAirplane!.id ?? 0,
+      );
       await flightDAO.insertFlight(flight);
       load();
     }
   }
 
   Future<void> deleteData(Flight flight) async {
-    await reservationDAO.deleteReservationByFlightId(flight.id??0);
+    await reservationDAO.deleteReservationByFlightId(flight.id ?? 0);
     await flightDAO.removeFlight(flight);
     load();
   }
@@ -109,7 +152,8 @@ class ToDoState extends State<FlightPage> {
       _destinationCity.text = selectedItem!.destinationCity;
       _departureTime = selectedItem!.getDepartureDateTime();
       _arrivalTime = selectedItem!.getArrivalDateTime();
-      selectedAirplane = planeList.firstWhere((airplane) => airplane.id == selectedItem!.airplaneId);
+      selectedAirplane = planeList
+          .firstWhere((airplane) => airplane.id == selectedItem!.airplaneId);
 
       return Column(
         children: [
@@ -122,12 +166,14 @@ class ToDoState extends State<FlightPage> {
             decoration: InputDecoration(labelText: 'Destination City'),
           ),
           ListTile(
-            title: Text("Departure Time: ${_departureTime?.toLocal().toString().split(' ')[0]}"),
+            title: Text(
+                "Departure Time: ${_departureTime?.toLocal().toString().split(' ')[0]}"),
             trailing: Icon(Icons.calendar_today),
             onTap: () => _selectDate(context, true),
           ),
           ListTile(
-            title: Text("Arrival Time: ${_arrivalTime?.toLocal().toString().split(' ')[0]}"),
+            title: Text(
+                "Arrival Time: ${_arrivalTime?.toLocal().toString().split(' ')[0]}"),
             trailing: Icon(Icons.calendar_today),
             onTap: () => _selectDate(context, false),
           ),
@@ -139,7 +185,8 @@ class ToDoState extends State<FlightPage> {
                 selectedAirplane = newValue;
               });
             },
-            items: planeList.map<DropdownMenuItem<Airplane>>((Airplane airplane) {
+            items:
+                planeList.map<DropdownMenuItem<Airplane>>((Airplane airplane) {
               return DropdownMenuItem<Airplane>(
                 value: airplane,
                 child: Text(airplane.name),
@@ -172,25 +219,26 @@ class ToDoState extends State<FlightPage> {
                 showDialog<String>(
                     context: context,
                     builder: (BuildContext context) => AlertDialog(
-                      title: const Text('Delete the Flight'),
-                      content: const Text('Do you sure you want to delete the item'),
-                      actions: <Widget>[
-                        ElevatedButton(
-                            onPressed: () {
-                              deleteData(selectedItem!);
-                              Navigator.pop(context);
-                              setState(() {
-                                selectedItem = null;
-                              });
-                            },
-                            child: Text("Yes")),
-                        ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text("No"))
-                      ],
-                    ));
+                          title: const Text('Delete the Flight'),
+                          content: const Text(
+                              'Do you sure you want to delete the item'),
+                          actions: <Widget>[
+                            ElevatedButton(
+                                onPressed: () {
+                                  deleteData(selectedItem!);
+                                  Navigator.pop(context);
+                                  setState(() {
+                                    selectedItem = null;
+                                  });
+                                },
+                                child: Text("Yes")),
+                            ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text("No"))
+                          ],
+                        ));
               });
             },
           )
@@ -202,95 +250,133 @@ class ToDoState extends State<FlightPage> {
     ]);
   }
 
-  Widget AddFlight(){
+  Widget AddFlight() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-    Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch, // Stretch widgets to fill horizontal space
-      children: [
-        TextField(
-          controller: _departureCity,
-          decoration: InputDecoration(
-            labelText: 'Departure City',
-            border: OutlineInputBorder(),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: _departureCity,
+              decoration: InputDecoration(
+                labelText: 'Departure City',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 8.0),
+            TextField(
+              controller: _destinationCity,
+              decoration: InputDecoration(
+                labelText: 'Destination City',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 8.0),
+            ListTile(
+              title: Text(
+                  "Departure Time: ${_departureTime?.toLocal().toString().split(' ')[0]}"),
+              trailing: Icon(Icons.calendar_today),
+              onTap: () => _selectDate(context, true),
+            ),
+            SizedBox(height: 8.0),
+            ListTile(
+              title: Text(
+                  "Arrival Time: ${_arrivalTime?.toLocal().toString().split(' ')[0]}"),
+              trailing: Icon(Icons.calendar_today),
+              onTap: () => _selectDate(context, false),
+            ),
+            SizedBox(height: 8.0),
+            DropdownButtonFormField<Airplane>(
+              decoration: InputDecoration(
+                labelText: 'Select Airplane',
+                border: OutlineInputBorder(),
+              ),
+              value: selectedAirplane,
+              onChanged: (Airplane? newValue) {
+                setState(() {
+                  selectedAirplane = newValue;
+                });
+              },
+              items: planeList
+                  .map<DropdownMenuItem<Airplane>>((Airplane airplane) {
+                return DropdownMenuItem<Airplane>(
+                  value: airplane,
+                  child: Text(airplane.name),
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 8.0),
+            ElevatedButton(
+              child: Text("Add Flight"),
+              onPressed: () {
+                insertData();
+                setState(() {
+                  _departureCity.text = "";
+                  _destinationCity.text = "";
+                  _departureTime = null;
+                  _arrivalTime = null;
+                  selectedAirplane = null;
+                  _showAddFlight = false;
+                });
+              },
+            ),
+            ElevatedButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                setState(() {
+                  _departureCity.text = "";
+                  _destinationCity.text = "";
+                  _departureTime = null;
+                  _arrivalTime = null;
+                  selectedAirplane = null;
+                  _showAddFlight = false;
+                });
+              },
+            ),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget LoginField() {
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: TextField(
+            controller: _login,
+            decoration: InputDecoration(
+              labelText: 'Your Name',
+              border: OutlineInputBorder(),
+            ),
           ),
         ),
-        SizedBox(height: 8.0), // Add space between TextFields
-        TextField(
-          controller: _destinationCity,
-          decoration: InputDecoration(
-            labelText: 'Destination City',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        SizedBox(height: 8.0), // Add space between ListTile and TextFields
-        ListTile(
-          title: Text("Departure Time: ${_departureTime?.toLocal().toString().split(' ')[0]}"),
-          trailing: Icon(Icons.calendar_today),
-          onTap: () => _selectDate(context, true),
-        ),
-        SizedBox(height: 8.0), // Add space between ListTile widgets
-        ListTile(
-          title: Text("Arrival Time: ${_arrivalTime?.toLocal().toString().split(' ')[0]}"),
-          trailing: Icon(Icons.calendar_today),
-          onTap: () => _selectDate(context, false),
-        ),
-        SizedBox(height: 8.0), // Add space between ListTile and DropdownButton
-        DropdownButtonFormField<Airplane>(
-          decoration: InputDecoration(
-            labelText: 'Select Airplane',
-            border: OutlineInputBorder(),
-          ),
-          value: selectedAirplane,
-          onChanged: (Airplane? newValue) {
-            setState(() {
-              selectedAirplane = newValue;
-            });
-          },
-          items: planeList.map<DropdownMenuItem<Airplane>>((Airplane airplane) {
-            return DropdownMenuItem<Airplane>(
-              value: airplane,
-              child: Text(airplane.name),
-            );
-          }).toList(),
-        ),
-        SizedBox(height: 8.0), // Add space between DropdownButton and ElevatedButton
         ElevatedButton(
-          child: Text("Add Flight"),
           onPressed: () {
-            insertData();
-            setState(() {
-              _departureCity.text = "";
-              _destinationCity.text = "";
-              _departureTime = null;
-              _arrivalTime = null;
-              selectedAirplane = null;
-              _showAddFlight = false;
-            });
+            saveEncrypted();
+            loadEncrypted();
+            var name = DataRepository.login??'';
+            showSnackBar("Successfully login as " +name);
           },
-        ),
-        ElevatedButton(
-          child: Text("Cancle"),
-          onPressed: () {
-            setState(() {
-              _departureCity.text = "";
-              _destinationCity.text = "";
-              _departureTime = null;
-              _arrivalTime = null;
-              selectedAirplane = null;
-              _showAddFlight = false;
-            });
-          },
+          child: Text(
+            "Login",
+            style: TextStyle(
+              color: Colors.blue,
+              fontSize: 16,
+            ),
+          ),
         ),
       ],
-    )]);
+    );
   }
+
 
   Widget FlightList() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
+        LoginField(),
         ElevatedButton(
           child: Text("Add New Flight"),
           onPressed: () {
@@ -300,27 +386,38 @@ class ToDoState extends State<FlightPage> {
               _departureTime = null;
               _arrivalTime = null;
               selectedAirplane = null;
-              _showAddFlight = true; // Show AddFlight form
+              _showAddFlight = true;
             });
           },
         ),
         Expanded(
-            child: ListView.builder(
-                itemCount: flights.length,
-                itemBuilder: (context, rowNum) {
-                  return GestureDetector(
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('${rowNum + 1}', textAlign: TextAlign.left),
-                            Text(flights[rowNum].getArrivalDateTime().toLocal().toString().split(' ')[0], textAlign: TextAlign.right)
-                          ]),
-                      onTap: () {
-                        setState(() {
-                          selectedItem = flights[rowNum];
-                        });
-                      });
-                }))
+          child: ListView.builder(
+            itemCount: flights.length,
+            itemBuilder: (context, rowNum) {
+              return GestureDetector(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('${rowNum + 1}', textAlign: TextAlign.left),
+                    Text(
+                      flights[rowNum]
+                          .getArrivalDateTime()
+                          .toLocal()
+                          .toString()
+                          .split(' ')[0],
+                      textAlign: TextAlign.right,
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  setState(() {
+                    selectedItem = flights[rowNum];
+                  });
+                },
+              );
+            },
+          ),
+        )
       ],
     );
   }
@@ -335,18 +432,12 @@ class ToDoState extends State<FlightPage> {
     Widget display;
 
     if (_showAddFlight) {
-      display =  AddFlight();
+      display = AddFlight();
     } else if ((width > height) && (width > 720)) {
       display = Row(
         children: [
-          Expanded(
-            flex: 1,
-            child: list,
-          ),
-          Expanded(
-            flex: 3,
-            child: DetailsPage(),
-          ),
+          Expanded(flex: 1, child: list),
+          Expanded(flex: 3, child: DetailsPage()),
         ],
       );
     } else {
