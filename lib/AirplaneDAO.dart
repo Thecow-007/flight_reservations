@@ -18,4 +18,7 @@ abstract class AirplaneDAO {
 
   @Query("Delete * From Airplane")
   Future<int?> removeAllAirplane();
+
+  @update
+  Future<void> updateAirplane(Airplane airplane);
 }
