@@ -106,7 +106,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Customer` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `firstname` TEXT NOT NULL, `lastname` TEXT NOT NULL, `address` TEXT NOT NULL, `birthday` TEXT NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Flight` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `departureCity` TEXT NOT NULL, `destinationCity` TEXT NOT NULL, `departureTime` TEXT NOT NULL, `arrivalTime` TEXT NOT NULL, `airplaneId` INTEGER NOT NULL, FOREIGN KEY (`airplaneId`) REFERENCES `Airplane` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
+            'CREATE TABLE IF NOT EXISTS `Flight` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `departureCity` TEXT NOT NULL, `destinationCity` TEXT NOT NULL, `departureTime` INTEGER NOT NULL, `arrivalTime` INTEGER NOT NULL, `airplaneId` INTEGER NOT NULL, FOREIGN KEY (`airplaneId`) REFERENCES `Airplane` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Reservation` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `customerId` INTEGER NOT NULL, `flightId` INTEGER NOT NULL, `date` TEXT NOT NULL, FOREIGN KEY (`customerId`) REFERENCES `Customer` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, FOREIGN KEY (`flightId`) REFERENCES `Flight` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
 
@@ -165,6 +165,18 @@ class _$AirplaneDAO extends AirplaneDAO {
                   'maxSpeed': item.maxSpeed,
                   'range': item.range
                 },
+            changeListener),
+        _airplaneUpdateAdapter = UpdateAdapter(
+            database,
+            'Airplane',
+            ['id'],
+            (Airplane item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'numberOfPassengers': item.numberOfPassengers,
+                  'maxSpeed': item.maxSpeed,
+                  'range': item.range
+                },
             changeListener);
 
   final sqflite.DatabaseExecutor database;
@@ -176,6 +188,8 @@ class _$AirplaneDAO extends AirplaneDAO {
   final InsertionAdapter<Airplane> _airplaneInsertionAdapter;
 
   final DeletionAdapter<Airplane> _airplaneDeletionAdapter;
+
+  final UpdateAdapter<Airplane> _airplaneUpdateAdapter;
 
   @override
   Future<List<Airplane>> selectAllAirplanes() async {
@@ -215,8 +229,13 @@ class _$AirplaneDAO extends AirplaneDAO {
   }
 
   @override
-  Future<int> removeToDo(Airplane airplane) {
+  Future<int> removeAirplane(Airplane airplane) {
     return _airplaneDeletionAdapter.deleteAndReturnChangedRows(airplane);
+  }
+
+  @override
+  Future<void> updateAirplane(Airplane airplane) async {
+    await _airplaneUpdateAdapter.update(airplane, OnConflictStrategy.abort);
   }
 }
 
@@ -319,6 +338,19 @@ class _$FlightDAO extends FlightDAO {
                   'airplaneId': item.airplaneId
                 },
             changeListener),
+        _flightUpdateAdapter = UpdateAdapter(
+            database,
+            'Flight',
+            ['id'],
+            (Flight item) => <String, Object?>{
+                  'id': item.id,
+                  'departureCity': item.departureCity,
+                  'destinationCity': item.destinationCity,
+                  'departureTime': item.departureTime,
+                  'arrivalTime': item.arrivalTime,
+                  'airplaneId': item.airplaneId
+                },
+            changeListener),
         _flightDeletionAdapter = DeletionAdapter(
             database,
             'Flight',
@@ -341,6 +373,8 @@ class _$FlightDAO extends FlightDAO {
 
   final InsertionAdapter<Flight> _flightInsertionAdapter;
 
+  final UpdateAdapter<Flight> _flightUpdateAdapter;
+
   final DeletionAdapter<Flight> _flightDeletionAdapter;
 
   @override
@@ -350,8 +384,8 @@ class _$FlightDAO extends FlightDAO {
             row['id'] as int?,
             row['departureCity'] as String,
             row['destinationCity'] as String,
-            row['departureTime'] as String,
-            row['arrivalTime'] as String,
+            row['departureTime'] as int,
+            row['arrivalTime'] as int,
             row['airplaneId'] as int));
   }
 
@@ -362,8 +396,8 @@ class _$FlightDAO extends FlightDAO {
             row['id'] as int?,
             row['departureCity'] as String,
             row['destinationCity'] as String,
-            row['departureTime'] as String,
-            row['arrivalTime'] as String,
+            row['departureTime'] as int,
+            row['arrivalTime'] as int,
             row['airplaneId'] as int),
         arguments: [id],
         queryableName: 'Flight',
@@ -380,6 +414,11 @@ class _$FlightDAO extends FlightDAO {
   Future<int> insertFlight(Flight flight) {
     return _flightInsertionAdapter.insertAndReturnId(
         flight, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updateFlight(Flight flight) async {
+    await _flightUpdateAdapter.update(flight, OnConflictStrategy.abort);
   }
 
   @override
@@ -452,6 +491,20 @@ class _$ReservationDAO extends ReservationDAO {
   Future<int?> removeAllReservation() async {
     return _queryAdapter.query('Delete * From Reservation',
         mapper: (Map<String, Object?> row) => row.values.first as int);
+  }
+
+  @override
+  Future<void> deleteReservationByFlightId(int flightId) async {
+    await _queryAdapter.queryNoReturn(
+        'DELETE FROM Reservation WHERE flightId = ?1',
+        arguments: [flightId]);
+  }
+
+  @override
+  Future<void> deleteReservationByCustomerId(int customerId) async {
+    await _queryAdapter.queryNoReturn(
+        'DELETE FROM Reservation WHERE customerId = ?1',
+        arguments: [customerId]);
   }
 
   @override

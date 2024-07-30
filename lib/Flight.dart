@@ -10,12 +10,16 @@ class Flight{
 
   @PrimaryKey(autoGenerate: true)
   final int? id;
-
-  String departureCity;
-  String destinationCity;
-  String departureTime;
-  String arrivalTime;
-  int airplaneId;
+  final String departureCity;
+  final String destinationCity;
+  final int departureTime; // Store as timestamp (int)
+  final int arrivalTime;    // Store as timestamp (int)
+  final int airplaneId;
 
   Flight(this.id, this.departureCity, this.destinationCity, this.departureTime, this.arrivalTime, this.airplaneId);
+
+  DateTime getDepartureDateTime() => DateTime.fromMillisecondsSinceEpoch(departureTime);
+  DateTime getArrivalDateTime() => DateTime.fromMillisecondsSinceEpoch(arrivalTime);
+
+  static int dateTimeToTimestamp(DateTime dateTime) => dateTime.millisecondsSinceEpoch;
 }
