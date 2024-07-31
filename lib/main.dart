@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 
 import 'FlightPage.dart';
 import 'AirplanePage.dart';
+import 'ReservationPage.dart';
 import 'ReservationDAO.dart';
 import 'database.dart';
 
@@ -18,7 +19,7 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -27,11 +28,14 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+      home: const MyHomePage(title: 'Flight Reservations'),
       initialRoute: '/',
       routes: {
-        '/': (context) => MyHomePage(title: 'Flight Reservations'),
+        // '/': (context) => MyHomePage(title: 'Flight Reservations'),
         '/flight': (context) => FlightPage(),
         '/plane': (context) => AirplanePage(),
+        '/reservations': (context) => ReservationPage(),
+        
       },
     );
   }
@@ -112,7 +116,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     )),
               ],
             ),
-
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               ElevatedButton(
                   onPressed: () {
@@ -127,15 +130,21 @@ class _MyHomePageState extends State<MyHomePage> {
                           style: TextStyle(fontSize: 30.0, color: Colors.white))
                     ],
                   )),
-              Stack(
-                alignment: AlignmentDirectional.center,
-                children: <Widget>[
-                  Image.asset("Photos/Rez.png", height: 200.0, width: 200.0),
-                  Text("Reservations",
-                      style: TextStyle(fontSize: 30.0, color: Colors.white))
-                ],
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, "/reservations");
+                },
+                child: Stack(
+                  alignment: AlignmentDirectional.center,
+                  children: <Widget>[
+                    Image.asset("Photos/Rez.png", height: 200.0, width: 200.0),
+                    Text("Reservations",
+                        style: TextStyle(fontSize: 30.0, color: Colors.white))
+                  ],
+                ),
               ),
             ]),
+
           ],
         ),
       ),
