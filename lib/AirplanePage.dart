@@ -40,6 +40,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController numOfPassengersController = TextEditingController();
   final TextEditingController maxSpeedController = TextEditingController();
   final TextEditingController rangeController = TextEditingController();
+  EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
+
 
   @override
   void initState() {
@@ -68,16 +70,83 @@ class _MyHomePageState extends State<MyHomePage> {
       rangeController.text = '';
     });
     loadDatabase();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Airplane has been added'),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 
   Future<void> deleteItem(Airplane item) async {
     await DAO.removeAirplane(item);
     loadDatabase();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Airplane has been deleted'),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 
   Future<void> updateItem(Airplane item) async {
     await DAO.updateAirplane(item);
     loadDatabase();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Airplane has been updated'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  void validateAndAddItem() {
+    // Check if any text fields are empty
+    if (nameController.text.isEmpty ||
+        numOfPassengersController.text.isEmpty ||
+        maxSpeedController.text.isEmpty ||
+        rangeController.text.isEmpty) {
+      // Show Snackbar if any text field is empty
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('All text fields must be filled'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      // Call addItem function if all text fields are filled
+      addItem();
+    }
+  }
+
+  void validateAndUpdate() {
+    // Check if any text fields are empty
+    if (nameController.text.isEmpty ||
+        numOfPassengersController.text.isEmpty ||
+        maxSpeedController.text.isEmpty ||
+        rangeController.text.isEmpty) {
+      // Show Snackbar if any text field is empty
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('All text fields must be filled'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      if (selectedItem != null) {
+        final updatedItem = Airplane(
+          selectedItem!.id,
+          nameController.text,
+          int.parse(numOfPassengersController.text),
+          double.parse(maxSpeedController.text),
+          double.parse(rangeController.text),
+        );
+        updateItem(updatedItem);
+        setState(() {
+          selectedItem = null;
+        });
+      }
+    }
   }
 
   Widget AddPage() {
@@ -149,23 +218,47 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: addItem,
               child: const Text("Add Airplane"),
+              onPressed: () {
+                setState(() {
+                  showDialog<String>(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                        title: const Text('Add this Airplane'),
+                        content: const Text('Are you sure you want to add this airplane?'),
+                        actions: <Widget>[
+                          ElevatedButton(
+                              onPressed: () {
+                                validateAndAddItem();
+                                Navigator.pop(context);
+                                setState(() {
+                                  selectedItem = null;
+                                });
+                              },
+                              child: const Text("Yes")),
+                          ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text("No"))
+                        ],
+                      ));
+                });
+              },
             ),
           ],
         ),
         const SizedBox(height: 20),
         ElevatedButton(
           onPressed: () {
-            setState(() {
-              addPageRequest = false;
-            });
+            Navigator.pop(context);
           },
           child: const Text("Back to List"),
         ),
       ],
     );
   }
+
 
   Widget AirplaneList() {
     return Column(
@@ -248,19 +341,30 @@ class _MyHomePageState extends State<MyHomePage> {
           ElevatedButton(
             child: const Text("Update"),
             onPressed: () {
-              if (selectedItem != null) {
-                final updatedItem = Airplane(
-                  selectedItem!.id,
-                  nameController.value.text,
-                  int.parse(numOfPassengersController.text),
-                  double.parse(maxSpeedController.text),
-                  double.parse(rangeController.text),
-                );
-                updateItem(updatedItem);
-                setState(() {
-                  selectedItem = null;
-                });
-              }
+              setState(() {
+                showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: const Text('Update this Airplane'),
+                      content: const Text('Are you sure you want to update this airplane?'),
+                      actions: <Widget>[
+                        ElevatedButton(
+                            onPressed: () {
+                              validateAndUpdate();
+                              Navigator.pop(context);
+                              setState(() {
+                                selectedItem = null;
+                              });
+                            },
+                            child: const Text("Yes")),
+                        ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text("No"))
+                      ],
+                    ));
+              });
             },
           ),
           ElevatedButton(
@@ -271,7 +375,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     context: context,
                     builder: (BuildContext context) => AlertDialog(
                       title: const Text('Delete this Airplane'),
-                      content: const Text('Are you sure you want to delete this item?'),
+                      content: const Text('Are you sure you want to delete this airplane?'),
                       actions: <Widget>[
                         ElevatedButton(
                             onPressed: () {
