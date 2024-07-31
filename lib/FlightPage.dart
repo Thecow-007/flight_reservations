@@ -33,7 +33,6 @@ class ToDoState extends State<FlightPage> {
   @override
   void initState() {
     super.initState();
-    _login = TextEditingController();
     _departureCity = TextEditingController();
     _destinationCity = TextEditingController();
 
@@ -43,43 +42,52 @@ class ToDoState extends State<FlightPage> {
 
   @override
   void dispose() {
-    _login.dispose();
     _departureCity.dispose();
     _destinationCity.dispose();
     super.dispose();
+    saveEncrypted();
   }
 
   void loadEncrypted() async {
     EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
     final encryptedResult = await prefs.getInstance();
-    var login = encryptedResult.getString("login");
-    if (login != null) {
-      _login.text = login;
+    var departureCity = encryptedResult.getString("departureCity");
+    var destinationCity = encryptedResult.getString("destinationCity");
+    if (destinationCity != null) {
+      _destinationCity.text = destinationCity;
+    }
+    if (departureCity != null) {
+      _departureCity.text = departureCity;
     }
 
-    if (login != null) {
-      SnackBar snackBar = SnackBar(
-          content: Text('Welcome back ' + login),
-          action: SnackBarAction(
-              label: 'Clear saved data',
-              onPressed: () {
-                _login.text = "";
-                cleanData();
-              }));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
+      if(departureCity!.length > 0  || destinationCity!.length > 0){
+        SnackBar snackBar = SnackBar(
+            content: Text('Previous data have been loaded!'),
+            action: SnackBarAction(
+                label: 'Clear saved data',
+                onPressed: () {
+                  _destinationCity.text = "";
+                  _departureCity.text = "";
+                  cleanData();
+                }));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
   }
 
   void saveEncrypted() async {
     EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
     final encryptedResult = await prefs.getInstance();
-    encryptedResult.setString("login", _login.text);
+    encryptedResult.setString("departureCity", _departureCity.text);
+    encryptedResult.setString("destinationCity", _destinationCity.text);
+
   }
 
   void cleanData() async {
     EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
     final encryptedResult = await prefs.getInstance();
-    await encryptedResult.remove("login");
+    await encryptedResult.remove("departureCity");
+    await encryptedResult.remove("destinationCity");
+
   }
 
   void showSnackBar(String message) {
@@ -352,13 +360,9 @@ class ToDoState extends State<FlightPage> {
               ),
               ElevatedButton(
                 child: Text("Cancel"),
-                onPressed: () {
+                onPressed: () async {
+                  saveEncrypted();
                   setState(() {
-                    _departureCity.text = "";
-                    _destinationCity.text = "";
-                    _departureTime = null;
-                    _arrivalTime = null;
-                    selectedAirplane = null;
                     _showAddFlight = false;
                   });
                 },
@@ -370,45 +374,11 @@ class ToDoState extends State<FlightPage> {
     );
   }
 
-  Widget LoginField() {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: TextField(
-            controller: _login,
-            decoration: InputDecoration(
-              labelText: 'Your Name',
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            saveEncrypted();
-            EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
-            final encryptedResult = await prefs.getInstance();
-            var login = encryptedResult.getString("login");
-            if (login != null) {
-              showSnackBar("Successfully login as " + login);
-            }
-          },
-          child: Text(
-            "Login",
-            style: TextStyle(
-              color: Colors.blue,
-              fontSize: 16,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget FlightList() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        LoginField(),
         ElevatedButton(
           child: Text("Add New Flight"),
           onPressed: () {
@@ -420,6 +390,7 @@ class ToDoState extends State<FlightPage> {
               selectedAirplane = null;
               _showAddFlight = true;
             });
+            loadEncrypted();
           },
         ),
         Row(
