@@ -13,9 +13,12 @@ abstract class CustomerDAO {
   @insert
   Future<int> insertCustomer(Customer customer);
 
+  @insert
+  Future<List<int>> insertCustomers(List<Customer> customers);
+
   @delete
   Future<int> removeCustomer(Customer customer);
 
   @Query("Delete * From Customer")
-  Future<int?> removeAllToDo();
+  Future<int?> removeAllCustomer();
 }
