@@ -154,7 +154,7 @@ class _$AirplaneDAO extends AirplaneDAO {
                   'range': item.range
                 },
             changeListener),
-        _airplaneDeletionAdapter = DeletionAdapter(
+        _airplaneUpdateAdapter = UpdateAdapter(
             database,
             'Airplane',
             ['id'],
@@ -166,7 +166,7 @@ class _$AirplaneDAO extends AirplaneDAO {
                   'range': item.range
                 },
             changeListener),
-        _airplaneUpdateAdapter = UpdateAdapter(
+        _airplaneDeletionAdapter = DeletionAdapter(
             database,
             'Airplane',
             ['id'],
@@ -187,9 +187,9 @@ class _$AirplaneDAO extends AirplaneDAO {
 
   final InsertionAdapter<Airplane> _airplaneInsertionAdapter;
 
-  final DeletionAdapter<Airplane> _airplaneDeletionAdapter;
-
   final UpdateAdapter<Airplane> _airplaneUpdateAdapter;
+
+  final DeletionAdapter<Airplane> _airplaneDeletionAdapter;
 
   @override
   Future<List<Airplane>> selectAllAirplanes() async {
@@ -229,13 +229,13 @@ class _$AirplaneDAO extends AirplaneDAO {
   }
 
   @override
-  Future<int> removeAirplane(Airplane airplane) {
-    return _airplaneDeletionAdapter.deleteAndReturnChangedRows(airplane);
+  Future<void> updateAirplane(Airplane airplane) async {
+    await _airplaneUpdateAdapter.update(airplane, OnConflictStrategy.abort);
   }
 
   @override
-  Future<void> updateAirplane(Airplane airplane) async {
-    await _airplaneUpdateAdapter.update(airplane, OnConflictStrategy.abort);
+  Future<int> removeAirplane(Airplane airplane) {
+    return _airplaneDeletionAdapter.deleteAndReturnChangedRows(airplane);
   }
 }
 
@@ -304,7 +304,7 @@ class _$CustomerDAO extends CustomerDAO {
   }
 
   @override
-  Future<int?> removeAllToDo() async {
+  Future<int?> removeAllCustomer() async {
     return _queryAdapter.query('Delete * From Customer',
         mapper: (Map<String, Object?> row) => row.values.first as int);
   }
@@ -313,6 +313,12 @@ class _$CustomerDAO extends CustomerDAO {
   Future<int> insertCustomer(Customer customer) {
     return _customerInsertionAdapter.insertAndReturnId(
         customer, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<List<int>> insertCustomers(List<Customer> customers) {
+    return _customerInsertionAdapter.insertListAndReturnIds(
+        customers, OnConflictStrategy.abort);
   }
 
   @override
