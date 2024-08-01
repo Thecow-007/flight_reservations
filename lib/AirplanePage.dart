@@ -36,14 +36,14 @@ class _AirplanePageState extends State<AirplanePage> {
 
   Future<void> addItem() async {
     final int nextId = (await DAO.selectAllAirplanes()).length + 1;
-    Airplane todo = Airplane(
+    Airplane airplane = Airplane(
       nextId,
       nameController.text,
       int.parse(numOfPassengersController.text),
       double.parse(maxSpeedController.text),
       double.parse(rangeController.text),
     );
-    await DAO.insertAirplane(todo);
+    await DAO.insertAirplane(airplane);
 
     // Save data using EncryptedSharedPreferences
     EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
@@ -54,41 +54,51 @@ class _AirplanePageState extends State<AirplanePage> {
     await encryptedprefs.setString('range', rangeController.text);
 
     setState(() {
-      nameController.text = '';
-      numOfPassengersController.text = '';
-      maxSpeedController.text = '';
-      rangeController.text = '';
+      nameController.clear();
+      numOfPassengersController.clear();
+      maxSpeedController.clear();
+      rangeController.clear();
     });
 
     loadDatabase();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Airplane has been added'),
+      SnackBar(
+        content: const Text('Airplane has been added'),
         backgroundColor: Colors.green,
       ),
     );
   }
 
   Future<void> deleteItem(Airplane item) async {
-    await DAO.removeAirplane(item);
-    loadDatabase();
-    setState(() {
-      selectedItem = null;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Airplane has been deleted'),
-        backgroundColor: Colors.green,
-      ),
-    );
+    try {
+      await DAO.removeAirplane(item);
+      loadDatabase();
+      setState(() {
+        selectedItem = null;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Airplane has been deleted'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      print('Error deleting item: $e'); // Debug line
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Failed to delete airplane. Airplanes must finish all flights before being removed'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Future<void> updateItem(Airplane item) async {
     await DAO.updateAirplane(item);
     loadDatabase();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Airplane has been updated'),
+      SnackBar(
+        content: const Text('Airplane has been updated'),
         backgroundColor: Colors.green,
       ),
     );
@@ -100,8 +110,8 @@ class _AirplanePageState extends State<AirplanePage> {
         maxSpeedController.text.isEmpty ||
         rangeController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('All text fields must be filled'),
+        SnackBar(
+          content: const Text('All fields must be filled'),
           backgroundColor: Colors.red,
         ),
       );
@@ -116,8 +126,8 @@ class _AirplanePageState extends State<AirplanePage> {
         maxSpeedController.text.isEmpty ||
         rangeController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('All text fields must be filled'),
+        SnackBar(
+          content: const Text('All fields must be filled'),
           backgroundColor: Colors.red,
         ),
       );
@@ -137,66 +147,58 @@ class _AirplanePageState extends State<AirplanePage> {
   }
 
   Widget addPage() {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Text(
-            'Add an Airplane',
-            style: TextStyle(fontSize: 30),
-          ),
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextField(
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const Text(
+              'Add an Airplane',
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            TextField(
               controller: nameController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                hintText: "Enter name",
+                labelText: 'Enter Name',
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
               ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextField(
+            const SizedBox(height: 10),
+            TextField(
               controller: numOfPassengersController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                hintText: "Enter number of passengers",
+                labelText: 'Enter Number of Passengers',
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
               ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextField(
+            const SizedBox(height: 10),
+            TextField(
               controller: maxSpeedController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                hintText: "Enter max speed",
+                labelText: 'Enter Max Speed',
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
               ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextField(
+            const SizedBox(height: 10),
+            TextField(
               controller: rangeController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                hintText: "Enter range",
+                labelText: 'Enter Range',
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
               ),
             ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              ElevatedButton(
-                child: const Text("Add Airplane"),
-                onPressed: () {
-                  showDialog<String>(
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                ElevatedButton(
+                  onPressed: () => showDialog<String>(
                     context: context,
                     builder: (BuildContext context) => AlertDialog(
                       title: const Text('Add this Airplane'),
@@ -207,114 +209,119 @@ class _AirplanePageState extends State<AirplanePage> {
                             validateAndAddItem();
                             Navigator.pop(context);
                           },
-                          child: const Text("Yes"),
+                          child: const Text('Yes'),
                         ),
                         ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text("No"),
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('No'),
                         ),
                       ],
                     ),
-                  );
-                },
-              ),
-              ElevatedButton(
-                child: const Text("Copy Last Airplane"),
-                onPressed: () async {
-                  showDialog<String>(
-                    context: context,
-                    builder: (BuildContext context) => AlertDialog(
-                      title: const Text('Copy Last Airplane'),
-                      content: const Text('Are you sure you want to copy the last created airplane?'),
-                      actions: <Widget>[
-                        ElevatedButton(
-                          onPressed: () async {
-                            Navigator.pop(context);
-                            final EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
-                            final encryptedprefs = await prefs.getInstance();
-                            setState(() {
-                              nameController.text = (encryptedprefs.getString('name')) ?? '';
-                              numOfPassengersController.text = (encryptedprefs.getString('numOfPassengers')) ?? '';
-                              maxSpeedController.text = (encryptedprefs.getString('maxSpeed')) ?? '';
-                              rangeController.text = (encryptedprefs.getString('range')) ?? '';
-                            });
-                          },
-                          child: const Text("Yes"),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text("No"),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    addPageRequest = false; // Hide AddPage
-                    if (MediaQuery.of(context).size.width > 720) {
-                      // Show the list and details side by side
-                      selectedItem = null; // Ensure no item is selected
-                    }
-                  });
-                },
-                child: const Text("Back to List"),
-              ),
-            ],
-          ),
-        ],
+                  ),
+                  child: const Text('Add Airplane'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
+                    final encryptedprefs = await prefs.getInstance();
+                    setState(() {
+                      nameController.text = (encryptedprefs.getString('name')) ?? '';
+                      numOfPassengersController.text = (encryptedprefs.getString('numOfPassengers')) ?? '';
+                      maxSpeedController.text = (encryptedprefs.getString('maxSpeed')) ?? '';
+                      rangeController.text = (encryptedprefs.getString('range')) ?? '';
+                    });
+                  },
+                  child: const Text('Copy Last Airplane'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      addPageRequest = false; // Hide AddPage
+                      if (MediaQuery.of(context).size.width > 1000) {
+                        // Show the list and details side by side
+                        selectedItem = null; // Ensure no item is selected
+                      }
+                    });
+                  },
+                  child: const Text('Back to List'),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget airplaneList() {
-    return Column(
-      children: <Widget>[
-        const Text('Airplane List', style: TextStyle(fontSize: 30)),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ElevatedButton(
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const Text(
+            'Airplane List',
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
             onPressed: () {
               setState(() {
-                nameController.text = '';
-                numOfPassengersController.text = '';
-                maxSpeedController.text = '';
-                rangeController.text = '';
+                nameController.clear();
+                numOfPassengersController.clear();
+                maxSpeedController.clear();
+                rangeController.clear();
                 selectedItem = null;
                 addPageRequest = true; // Show AddPage
               });
             },
-            child: const Text("Add Airplane"),
-          ),
-        ),
-        Expanded(
-          child: Scrollbar(
-            thumbVisibility: true,
-            child: ListView.builder(
-              itemCount: allItems.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () => setState(() {
-                    selectedItem = allItems[index];
-                  }),
-                  child: ListTile(
-                    title: Text(allItems[index].name),
-                    subtitle: Text(
-                      'Passengers: ${allItems[index].numberOfPassengers}, Speed: ${allItems[index].maxSpeed}, Range: ${allItems[index].range}',
-                    ),
-                  ),
-                );
-              },
+            child: const Text('Add Airplane'),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+              textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 16),
+          Expanded(
+            child: Scrollbar(
+              thumbVisibility: true,
+              child: ListView.builder(
+                itemCount: allItems.length,
+                itemBuilder: (context, index) {
+                  final airplane = allItems[index];
+                  return GestureDetector(
+                    onTap: () => setState(() {
+                      selectedItem = airplane;
+                    }),
+                    child: Card(
+                      elevation: 5,
+                      margin: const EdgeInsets.symmetric(vertical: 8.0),
+                      color: Colors.deepPurpleAccent,
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(16.0),
+                        title: Text(
+                          airplane.name,
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          'Passengers: ${airplane.numberOfPassengers}\n'
+                              'Speed: ${airplane.maxSpeed} km/h\n'
+                              'Range: ${airplane.range} km',
+                          style: const TextStyle(fontSize: 14, color: Colors.black),
+                        ),
+                        isThreeLine: true,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -325,18 +332,24 @@ class _AirplanePageState extends State<AirplanePage> {
       maxSpeedController.text = selectedItem!.maxSpeed.toString();
       rangeController.text = selectedItem!.range.toString();
 
-      return SingleChildScrollView(
-        child: Column(
-          children: [
-            const Text(
-              'Update Airplane',
-              style: TextStyle(fontSize: 30),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
+      return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Update Airplane',
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              TextField(
                 controller: nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Name',
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                ),
                 onChanged: (value) {
                   if (selectedItem != null) {
                     setState(() {
@@ -351,12 +364,14 @@ class _AirplanePageState extends State<AirplanePage> {
                   }
                 },
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
+              const SizedBox(height: 10),
+              TextField(
                 controller: numOfPassengersController,
-                decoration: const InputDecoration(labelText: '# of Passengers'),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Number of Passengers',
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                ),
                 onChanged: (value) {
                   if (selectedItem != null) {
                     setState(() {
@@ -371,12 +386,14 @@ class _AirplanePageState extends State<AirplanePage> {
                   }
                 },
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
+              const SizedBox(height: 10),
+              TextField(
                 controller: maxSpeedController,
-                decoration: const InputDecoration(labelText: 'Max Speed'),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Max Speed',
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                ),
                 onChanged: (value) {
                   if (selectedItem != null) {
                     setState(() {
@@ -391,12 +408,14 @@ class _AirplanePageState extends State<AirplanePage> {
                   }
                 },
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
+              const SizedBox(height: 10),
+              TextField(
                 controller: rangeController,
-                decoration: const InputDecoration(labelText: 'Range'),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Range',
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                ),
                 onChanged: (value) {
                   if (selectedItem != null) {
                     setState(() {
@@ -411,86 +430,87 @@ class _AirplanePageState extends State<AirplanePage> {
                   }
                 },
               ),
-            ),
-            const SizedBox(height: 20),
-            // Use Row to align buttons horizontally
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                ElevatedButton(
-                  child: const Text("Update"),
-                  onPressed: () {
-                    showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Update this Airplane'),
-                        content: const Text('Are you sure you want to update this airplane?'),
-                        actions: <Widget>[
-                          ElevatedButton(
-                            onPressed: () {
-                              validateAndUpdate();
-                              Navigator.pop(context);
-                            },
-                            child: const Text("Yes"),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text("No"),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-                ElevatedButton(
-                  child: const Text("Delete"),
-                  onPressed: () {
-                    showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Delete this Airplane'),
-                        content: const Text('Are you sure you want to delete this airplane?'),
-                        actions: <Widget>[
-                          ElevatedButton(
-                            onPressed: () {
-                              deleteItem(selectedItem!);
-                              Navigator.pop(context);
-                            },
-                            child: const Text("Yes"),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text("No"),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-                ElevatedButton(
-                  child: const Text("Go Back"),
-                  onPressed: () {
-                    setState(() {
-                      selectedItem = null;
-                      nameController.text = '';
-                      numOfPassengersController.text = '';
-                      maxSpeedController.text = '';
-                      rangeController.text = '';
-                    });
-                  },
-                ),
-              ],
-            ),
-          ],
+              const SizedBox(height: 20),
+              // Use Row to align buttons horizontally
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  ElevatedButton(
+                    onPressed: () {
+                      showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Update this Airplane'),
+                          content: const Text('Are you sure you want to update this airplane?'),
+                          actions: <Widget>[
+                            ElevatedButton(
+                              onPressed: () {
+                                validateAndUpdate();
+                                Navigator.pop(context);
+                              },
+                              child: const Text("Yes"),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text("No"),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    child: const Text("Update"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Delete this Airplane'),
+                          content: const Text('Are you sure you want to delete this airplane?'),
+                          actions: <Widget>[
+                            ElevatedButton(
+                              onPressed: () {
+                                deleteItem(selectedItem!);
+                                Navigator.pop(context);
+                              },
+                              child: const Text("Yes"),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text("No"),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    child: const Text("Delete"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedItem = null;
+                        nameController.clear();
+                        numOfPassengersController.clear();
+                        maxSpeedController.clear();
+                        rangeController.clear();
+                      });
+                    },
+                    child: const Text("Go Back"),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       );
     }
     return const Center(child: Text("No item selected"));
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -502,7 +522,6 @@ class _AirplanePageState extends State<AirplanePage> {
     if (addPageRequest) {
       display = addPage();
     } else if (width > 1000) {
-      // Display the list and details side by side if width > 720
       display = Row(
         children: [
           Expanded(
@@ -516,13 +535,13 @@ class _AirplanePageState extends State<AirplanePage> {
         ],
       );
     } else if (selectedItem != null) {
-      // Display details page if an item is selected and width <= 720
       display = detailsPage();
     }
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Airplane Management'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: Center(child: display),
       bottomNavigationBar: BottomNavigationBar(
@@ -549,10 +568,8 @@ class _AirplanePageState extends State<AirplanePage> {
                 content: const Text('Press the "Add Airplane" button above the list, write your data into the textfields, then click "Add Airplane".'),
                 actions: <Widget>[
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text("Go Back"),
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK'),
                   ),
                 ],
               ),
@@ -566,10 +583,8 @@ class _AirplanePageState extends State<AirplanePage> {
                 content: const Text('Click on the airplane you want to update/delete, edit the fields and click "Update" or "Delete".'),
                 actions: <Widget>[
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text("Go Back"),
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK'),
                   ),
                 ],
               ),
