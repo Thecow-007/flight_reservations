@@ -62,8 +62,8 @@ class _AirplanePageState extends State<AirplanePage> {
 
     loadDatabase();
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Airplane has been added'),
+      const SnackBar(
+        content: Text('Airplane has been added'),
         backgroundColor: Colors.green,
       ),
     );
@@ -77,16 +77,15 @@ class _AirplanePageState extends State<AirplanePage> {
         selectedItem = null;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Airplane has been deleted'),
+        const SnackBar(
+          content: Text('Airplane has been deleted'),
           backgroundColor: Colors.green,
         ),
       );
     } catch (e) {
-      print('Error deleting item: $e'); // Debug line
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Failed to delete airplane. Airplanes must finish all flights before being removed'),
+        const SnackBar(
+          content: Text('Failed to delete airplane. Airplanes must finish all flights before being removed'),
           backgroundColor: Colors.red,
         ),
       );
@@ -97,8 +96,8 @@ class _AirplanePageState extends State<AirplanePage> {
     await DAO.updateAirplane(item);
     loadDatabase();
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Airplane has been updated'),
+      const SnackBar(
+        content: Text('Airplane has been updated'),
         backgroundColor: Colors.green,
       ),
     );
@@ -110,8 +109,8 @@ class _AirplanePageState extends State<AirplanePage> {
         maxSpeedController.text.isEmpty ||
         rangeController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('All fields must be filled'),
+        const SnackBar(
+          content: Text('All fields must be filled'),
           backgroundColor: Colors.red,
         ),
       );
@@ -126,8 +125,8 @@ class _AirplanePageState extends State<AirplanePage> {
         maxSpeedController.text.isEmpty ||
         rangeController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('All fields must be filled'),
+        const SnackBar(
+          content: Text('All fields must be filled'),
           backgroundColor: Colors.red,
         ),
       );
@@ -160,37 +159,37 @@ class _AirplanePageState extends State<AirplanePage> {
             const SizedBox(height: 20),
             TextField(
               controller: nameController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Enter Name',
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
               ),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: numOfPassengersController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Enter Number of Passengers',
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
               ),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: maxSpeedController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Enter Max Speed',
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
               ),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: rangeController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Enter Range',
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
               ),
             ),
             const SizedBox(height: 20),
@@ -345,10 +344,10 @@ class _AirplanePageState extends State<AirplanePage> {
               const SizedBox(height: 20),
               TextField(
                 controller: nameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Name',
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
                 ),
                 onChanged: (value) {
                   if (selectedItem != null) {
@@ -367,10 +366,10 @@ class _AirplanePageState extends State<AirplanePage> {
               const SizedBox(height: 10),
               TextField(
                 controller: numOfPassengersController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Number of Passengers',
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
                 ),
                 onChanged: (value) {
                   if (selectedItem != null) {
@@ -389,10 +388,10 @@ class _AirplanePageState extends State<AirplanePage> {
               const SizedBox(height: 10),
               TextField(
                 controller: maxSpeedController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Max Speed',
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
                 ),
                 onChanged: (value) {
                   if (selectedItem != null) {
@@ -411,10 +410,10 @@ class _AirplanePageState extends State<AirplanePage> {
               const SizedBox(height: 10),
               TextField(
                 controller: rangeController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Range',
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
                 ),
                 onChanged: (value) {
                   if (selectedItem != null) {
