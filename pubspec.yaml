@@ -28,6 +28,8 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  flutter_localizations:
+    sdk: flutter
   flutter:
     sdk: flutter
   floor: ^1.4.0
@@ -73,6 +75,8 @@ flutter:
     - Photos/flights.png
     - Photos/planes.png
     - Photos/Rez.png
+    - assets/translations/en.json
+    - assets/translations/ch.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

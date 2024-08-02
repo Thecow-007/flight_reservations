@@ -10,11 +10,13 @@ import 'ReservationDAO.dart';
 import 'database.dart';
 
 class FlightPage extends StatefulWidget {
+  const FlightPage({super.key});
   @override
-  State<FlightPage> createState() => ToDoState();
+  State<FlightPage> createState() => FlightState();
 }
 
-class ToDoState extends State<FlightPage> {
+class FlightState extends State<FlightPage> {
+
   late TextEditingController _login;
   late TextEditingController _departureCity;
   late TextEditingController _destinationCity;
