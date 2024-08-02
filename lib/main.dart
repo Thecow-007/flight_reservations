@@ -10,6 +10,7 @@ import 'FlightPage.dart';
 import 'AirplanePage.dart';
 import 'ReservationPage.dart';
 import 'ReservationDAO.dart';
+import 'CustomerPage.dart';
 import 'database.dart';
 
 void main() {
@@ -19,10 +20,10 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -31,13 +32,11 @@ class MyApp extends StatelessWidget {
       home: const MyHomePage(title: 'Flight Reservations'),
       initialRoute: '/',
       routes: {
-        '/': (context) => MyHomePage(title: 'Flight Reservations'),
+        // '/': (context) => MyHomePage(title: 'Flight Reservations'),
         '/flight': (context) => FlightPage(),
         '/plane': (context) => AirplanePage(),
         '/reservations': (context) => ReservationPage(),
-        
-      },
-
+        '/customer': (context) => CustomerPage(title: "Customer Page"),
       },
     );
   }
@@ -73,83 +72,89 @@ class _MyHomePageState extends State<MyHomePage> {
     customerDAO = database.customerDAO;
     flightDAO = database.flightDAO;
     reservationDAO = database.reservationDAO;
-
-    SampleInserts.insertSampleData(
-        airplaneDAO, customerDAO, flightDAO, reservationDAO);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            //Customers + Airplanes Row
-            Row(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title),
+        ),
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Stack(
-                  alignment: AlignmentDirectional.center,
+              children: <Widget>[
+                //Customers + Airplanes Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset("Photos/Customers.png",
-                        height: 200.0, width: 200.0),
-                    Text("Customers",
-                        style: TextStyle(fontSize: 30.0, color: Colors.white))
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, "/customer");
+                      },
+                      child: Stack(
+                        alignment: AlignmentDirectional.center,
+                        children: [
+                          Image.asset("Photos/Customers.png",
+                              height: 200.0, width: 200.0),
+                          Text("Customers",
+                              style: TextStyle(
+                                  fontSize: 30.0, color: Colors.white))
+                        ],
+                      ),
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, "/plane");
+                        },
+                        child: Stack(
+                          alignment: AlignmentDirectional.center,
+                          children: [
+                            Image.asset("Photos/planes.png",
+                                height: 200.0, width: 200.0),
+                            Text("Airplanes",
+                                style: TextStyle(
+                                    fontSize: 30.0, color: Colors.white))
+                          ],
+                        )),
                   ],
                 ),
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, "/plane");
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, "/flight");
+                      },
+                      child: Stack(
+                        alignment: AlignmentDirectional.center,
+                        children: <Widget>[
+                          Image.asset("Photos/flights.png",
+                              height: 200.0, width: 200.0),
+                          Text("Flights",
+                              style: TextStyle(
+                                  fontSize: 30.0, color: Colors.white))
+                        ],
+                      )),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, "/reservations");
                     },
                     child: Stack(
                       alignment: AlignmentDirectional.center,
-                      children: [
-                        Image.asset("Photos/planes.png",
+                      children: <Widget>[
+                        Image.asset("Photos/Rez.png",
                             height: 200.0, width: 200.0),
-                        Text("Airplanes",
+                        Text("Reservations",
                             style:
                                 TextStyle(fontSize: 30.0, color: Colors.white))
                       ],
-                    )),
+                    ),
+                  ),
+                ]),
               ],
             ),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, "/flight");
-                  },
-                  child: Stack(
-                    alignment: AlignmentDirectional.center,
-                    children: <Widget>[
-                      Image.asset("Photos/flights.png",
-                          height: 200.0, width: 200.0),
-                      Text("Flights",
-                          style: TextStyle(fontSize: 30.0, color: Colors.white))
-                    ],
-                  )),
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, "/reservations");
-                },
-                child: Stack(
-                  alignment: AlignmentDirectional.center,
-                  children: <Widget>[
-                    Image.asset("Photos/Rez.png", height: 200.0, width: 200.0),
-                    Text("Reservations",
-                        style: TextStyle(fontSize: 30.0, color: Colors.white))
-                  ],
-                ),
-              ),
-            ]),
-
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }
