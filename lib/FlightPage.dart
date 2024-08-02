@@ -398,90 +398,119 @@ class ToDoState extends State<FlightPage> {
   }
 
   Widget FlightList() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        ElevatedButton(
-          child: Text("Add New Flight"),
-          onPressed: () async {
-            EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
-            final encryptedResult = await prefs.getInstance();
-            var departureCity = encryptedResult.getString("departureCity");
-            var destinationCity = encryptedResult.getString("destinationCity");
-
-            if (departureCity!.length > 0 || destinationCity!.length > 0) {
-              showDialog<String>(
-                  context: context,
-                  builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Load the Saved Information'),
-                        content: const Text(
-                            'Would you like to load the saved data?'),
-                        actions: <Widget>[
-                          ElevatedButton(
-                              onPressed: () {
-                                if (destinationCity != null) {
-                                  _destinationCity.text = destinationCity;
-                                }
-                                if (departureCity != null) {
-                                  _departureCity.text = departureCity;
-                                }
-                                Navigator.pop(context);
-                              },
-                              child: Text("Ok")),
-                          ElevatedButton(
-                              onPressed: () {
-                                _departureCity.text = '';
-                                _destinationCity.text = '';
-                                showSnackBar(
-                                    "Press the Previous to load the saved data");
-                                Navigator.pop(context);
-                              },
-                              child: Text("Cancel"))
-                        ],
-                      ));
-              setState(() {
-                _showAddFlight = true;
-              });
-            }
-          },
-        ),
-        Row(
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: <Widget>[
+          SizedBox(height: 16.0),
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [Text('Departure Time'), Text('Departure City')]),
-        Expanded(
-          child: ListView.builder(
-            itemCount: flights.length,
-            itemBuilder: (context, rowNum) {
-              return GestureDetector(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      flights[rowNum]
-                          .getDepartureDateTime()
-                          .toLocal()
-                          .toString()
-                          .split(' ')[0],
-                      textAlign: TextAlign.right,
-                    ),
-                    Text(
-                      flights[rowNum].departureCity,
-                      textAlign: TextAlign.right,
-                    ),
-                  ],
-                ),
-                onTap: () {
-                  setState(() {
-                    selectedItem = flights[rowNum];
-                  });
-                },
-              );
-            },
+            children: [
+              Text(
+                'Departure Time',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'Departure City',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
           ),
-        )
-      ],
+          SizedBox(height: 8.0),
+          Expanded(
+            child: ListView.builder(
+              itemCount: flights.length,
+              itemBuilder: (context, rowNum) {
+                // Alternate background colors for rows
+                Color backgroundColor = rowNum % 2 == 0
+                    ? Colors.grey.shade200
+                    : Colors.white;
+
+                return GestureDetector(
+                  child: Container(
+                    color: backgroundColor,
+                    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          flights[rowNum]
+                              .getDepartureDateTime()
+                              .toLocal()
+                              .toString()
+                              .split(' ')[0],
+                          textAlign: TextAlign.right,
+                        ),
+                        Text(
+                          flights[rowNum].departureCity,
+                          textAlign: TextAlign.right,
+                        ),
+                      ],
+                    ),
+                  ),
+                  onTap: () {
+                    setState(() {
+                      selectedItem = flights[rowNum];
+                    });
+                  },
+                );
+              },
+            ),
+          ),
+          Center(
+            child: ElevatedButton(
+              child: Text("Add New Flight"),
+              onPressed: () async {
+                EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
+                final encryptedResult = await prefs.getInstance();
+                var departureCity = encryptedResult.getString("departureCity");
+                var destinationCity = encryptedResult.getString("destinationCity");
+
+                if (departureCity!.isNotEmpty || destinationCity!.isNotEmpty) {
+                  showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: const Text('Load the Saved Information'),
+                      content: const Text(
+                          'Would you like to load the saved data?'),
+                      actions: <Widget>[
+                        ElevatedButton(
+                          onPressed: () {
+                            if (destinationCity != null) {
+                              _destinationCity.text = destinationCity;
+                            }
+                            if (departureCity != null) {
+                              _departureCity.text = departureCity;
+                            }
+                            Navigator.pop(context);
+                          },
+                          child: Text("Ok"),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            _departureCity.text = '';
+                            _destinationCity.text = '';
+                            showSnackBar(
+                                "Press the Previous to load the saved data");
+                            Navigator.pop(context);
+                          },
+                          child: Text("Cancel"),
+                        ),
+                      ],
+                    ),
+                  );
+                  setState(() {
+                    _showAddFlight = true;
+                  });
+                }
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -507,10 +536,54 @@ class ToDoState extends State<FlightPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.greenAccent,
         title: Text("Flight List"),
       ),
       body: Center(child: display),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.flight),
+              label: 'Add Fight',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.upload),
+              label: 'Update/Delete',
+            ),
+          ],
+          onTap: (buttonIndex) {
+            if (buttonIndex == 0) {
+              showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: const Text('How to Add New Flight'),
+                  content: const Text('Press the "Add New Flight" button, fill up all the fields, then click the Add button.'),
+                  actions: <Widget>[
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('OK'),
+                    ),
+                  ],
+                ),
+              );
+            }
+            if (buttonIndex == 1) {
+              showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: const Text('Update/Delete'),
+                  content: const Text('Click on the record you want to modify, fill up all the fields to update or press the Delete button to delete the record.'),
+                  actions: <Widget>[
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('OK'),
+                    ),
+                  ],
+                ),
+              );
+            }
+          },
+        )
     );
   }
 }
