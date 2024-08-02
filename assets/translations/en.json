@@ -1,3 +1,20 @@
 {
-  
+  "flightReservations": "Flight Reservations",
+  "customers": "Customers",
+  "airplanes": "Airplanes",
+  "flights": "Flights",
+  "reservations": "Reservations",
+  "customerPage": "Customer Page",
+  "Customer Title": "Customer List",
+  "Customers": "Customers",
+  "Add Customer": "Add Customer",
+  "First Name": "First Name",
+  "Last Name": "Last Name",
+  "Address": "Address",
+  "Birthday": "Birthday",
+  "Copy": "Copy",
+  "Edit Customer": "Edit Customer",
+  "Update": "Update",
+  "Delete": "Delete",
+  "Record Successfully Updated": "Record successfully updated"
 }
