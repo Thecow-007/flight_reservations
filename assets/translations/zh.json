@@ -1,0 +1,20 @@
+{
+  "flightReservations": "航班预订",
+  "customers": "顾客",
+  "airplanes": "飞机",
+  "flights": "航班",
+  "reservations": "预订",
+  "customerPage": "顾客页面",
+  "Customer Title": "客户列表",
+  "Customers": "客户",
+  "Add Customer": "添加客户",
+  "First Name": "名字",
+  "Last Name": "姓氏",
+  "Address": "地址",
+  "Birthday": "生日",
+  "Copy": "复制",
+  "Edit Customer": "编辑客户",
+  "Update": "更新",
+  "Delete": "删除",
+  "Record Successfully Updated": "记录更新成功"
+}
