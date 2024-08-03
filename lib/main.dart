@@ -59,7 +59,7 @@ class _MyAppState extends State<MyApp> {
       home: MyHomePage(setLocale: setLocale),
       initialRoute: '/',
       routes: {
-        '/flight': (context) => FlightPage(),
+        '/flight': (context) => FlightPage(setLocale: setLocale),
         '/plane': (context) => AirplanePage(),
         '/reservations': (context) => ReservationPage(),
         '/customer': (context) => CustomerPage(setLocale: setLocale),
