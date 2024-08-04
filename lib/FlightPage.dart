@@ -11,25 +11,30 @@ import 'FlightDAO.dart';
 import 'ReservationDAO.dart';
 import 'database.dart';
 
+/// Main function to run the Flutter application.
 void main() {
   runApp(const MyApp());
 }
 
+/// Main application widget.
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
 
+  /// Method to set the locale of the application.
   static void setLocal(BuildContext context, Locale locale) {
     _MyAppState? state = context.findAncestorStateOfType<_MyAppState>();
     state?.setLocale(locale);
   }
 }
 
+/// State for the MyApp widget.
 class _MyAppState extends State<MyApp> {
   Locale _locale = const Locale('en');
 
+  /// Method to update the locale of the application.
   void setLocale(Locale locale) {
     setState(() {
       _locale = locale;
@@ -61,6 +66,7 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
+/// Page displaying the flight information.
 class FlightPage extends StatefulWidget {
   const FlightPage({super.key, required this.setLocale});
   final String title = "Customer Page";
@@ -69,6 +75,7 @@ class FlightPage extends StatefulWidget {
   State<FlightPage> createState() => FlightState();
 }
 
+/// State for the FlightPage widget.
 class FlightState extends State<FlightPage> {
   late TextEditingController _login;
   late TextEditingController _departureCity;
@@ -134,6 +141,7 @@ class FlightState extends State<FlightPage> {
     super.dispose();
   }
 
+  /// Method to load encrypted data.
   void loadEncrypted() async {
     EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
     final encryptedResult = await prefs.getInstance();
@@ -160,6 +168,7 @@ class FlightState extends State<FlightPage> {
     }
   }
 
+  /// Method to save encrypted data.
   void saveEncrypted() async {
     EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
     final encryptedResult = await prefs.getInstance();
@@ -167,6 +176,7 @@ class FlightState extends State<FlightPage> {
     encryptedResult.setString("destinationCity", _destinationCity.text);
   }
 
+  /// Method to clear saved encrypted data.
   void cleanData() async {
     EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
     final encryptedResult = await prefs.getInstance();
@@ -174,11 +184,13 @@ class FlightState extends State<FlightPage> {
     await encryptedResult.remove("destinationCity");
   }
 
+  /// Method to display a snack bar with a given message.
   void showSnackBar(String message) {
     final snackBar = SnackBar(content: Text(message));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
+  /// Method to load data from the database.
   Future<void> load() async {
     final database = await $FloorAppDatabase
         .databaseBuilder('FlightReservations.db')
@@ -193,6 +205,7 @@ class FlightState extends State<FlightPage> {
     setState(() {});
   }
 
+  /// Method to insert a new flight into the database.
   Future<void> insertData() async {
     if (selectedAirplane != null) {
       final flight = Flight(
@@ -208,17 +221,20 @@ class FlightState extends State<FlightPage> {
     }
   }
 
+  /// Method to delete a flight from the database.
   Future<void> deleteData(Flight flight) async {
     await reservationDAO.deleteReservationByFlightId(flight.id ?? 0);
     await flightDAO.removeFlight(flight);
     load();
   }
 
+  /// Method to update a flight in the database.
   Future<void> updateData(Flight flight) async {
     await flightDAO.updateFlight(flight);
     await load();
   }
 
+  /// Method to show a date picker and update the departure or arrival time.
   Future<void> _selectDate(BuildContext context, bool isDeparture) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -312,8 +328,12 @@ class FlightState extends State<FlightPage> {
         'Click on the record you want to modify, fill up all the fields to update or press the Delete button to delete the record.';
     updateText = AppLocalizations.of(context)?.translate('Update') ?? 'Update';
     deleteText = AppLocalizations.of(context)?.translate('Delete') ?? 'Delete';
-    previousDataLoaded = AppLocalizations.of(context)?.translate('Previous data have been loaded!') ?? 'Previous data have been loaded!';
-    clearSavedData = AppLocalizations.of(context)?.translate('Clear saved data') ?? 'Clear saved data';
+    previousDataLoaded = AppLocalizations.of(context)
+            ?.translate('Previous data have been loaded!') ??
+        'Previous data have been loaded!';
+    clearSavedData =
+        AppLocalizations.of(context)?.translate('Clear saved data') ??
+            'Clear saved data';
 
     Widget DetailsPage() {
       if (selectedItem != null) {
@@ -397,9 +417,8 @@ class FlightState extends State<FlightPage> {
                   showDialog<String>(
                     context: context,
                     builder: (BuildContext context) => AlertDialog(
-                      title:  Text(deleteTheFlight),
-                      content:  Text(
-                          areYouSureToDeleteItem),
+                      title: Text(deleteTheFlight),
+                      content: Text(areYouSureToDeleteItem),
                       actions: <Widget>[
                         ElevatedButton(
                           onPressed: () {
@@ -515,10 +534,9 @@ class FlightState extends State<FlightPage> {
                       showDialog<String>(
                           context: context,
                           builder: (BuildContext context) => AlertDialog(
-                                title:  Text(
-                                    saveInfoForNextTime),
-                                content:  Text(
-                                    wouldYouLikeToSaveDataForNextTime),
+                                title: Text(saveInfoForNextTime),
+                                content:
+                                    Text(wouldYouLikeToSaveDataForNextTime),
                                 actions: <Widget>[
                                   ElevatedButton(
                                       onPressed: () {
@@ -628,6 +646,12 @@ class FlightState extends State<FlightPage> {
               child: ElevatedButton(
                 child: Text(addNewFlight),
                 onPressed: () async {
+                  setState(() {
+                    _departureTime = null;
+                    _arrivalTime = null;
+                    selectedAirplane = null;
+                    _showAddFlight = false;
+                  });
                   EncryptedSharedPreferences prefs =
                       EncryptedSharedPreferences();
                   final encryptedResult = await prefs.getInstance();
@@ -641,9 +665,8 @@ class FlightState extends State<FlightPage> {
                     showDialog<String>(
                       context: context,
                       builder: (BuildContext context) => AlertDialog(
-                        title:  Text(loadSavedInfo),
-                        content:  Text(
-                            wouldYouLikeToLoadSavedData),
+                        title: Text(loadSavedInfo),
+                        content: Text(wouldYouLikeToLoadSavedData),
                         actions: <Widget>[
                           ElevatedButton(
                             onPressed: () {
@@ -661,8 +684,7 @@ class FlightState extends State<FlightPage> {
                             onPressed: () {
                               _departureCity.text = '';
                               _destinationCity.text = '';
-                              showSnackBar(
-                                  pressPreviousToLoadSavedData);
+                              showSnackBar(pressPreviousToLoadSavedData);
                               Navigator.pop(context);
                             },
                             child: Text(cancel),
@@ -724,9 +746,8 @@ class FlightState extends State<FlightPage> {
               showDialog<String>(
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
-                  title:  Text(howToAddNewFlight),
-                  content:  Text(
-                      pressAddNewFlightButton),
+                  title: Text(howToAddNewFlight),
+                  content: Text(pressAddNewFlightButton),
                   actions: <Widget>[
                     ElevatedButton(
                       onPressed: () => Navigator.pop(context),
@@ -740,9 +761,8 @@ class FlightState extends State<FlightPage> {
               showDialog<String>(
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
-                  title:  Text(updateDelete),
-                  content:  Text(
-                      clickOnRecordToModify),
+                  title: Text(updateDelete),
+                  content: Text(clickOnRecordToModify),
                   actions: <Widget>[
                     ElevatedButton(
                       onPressed: () => Navigator.pop(context),
