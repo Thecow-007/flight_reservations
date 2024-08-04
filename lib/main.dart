@@ -6,11 +6,12 @@ import 'package:flight_reservations/Reservation.dart';
 import 'package:flight_reservations/SampleInserts.dart';
 import 'package:flutter/material.dart';
 
+
 import 'FlightPage.dart';
 import 'AirplanePage.dart';
 import 'ReservationPage.dart';
+
 import 'ReservationDAO.dart';
-import 'CustomerPage.dart';
 import 'database.dart';
 
 void main() {
@@ -20,30 +21,41 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+
       home: const MyHomePage(title: 'Flight Reservations'),
+
       initialRoute: '/',
       routes: {
-        // '/': (context) => MyHomePage(title: 'Flight Reservations'),
+        '/': (context) => MyHomePage(title: 'Flight Reservations'),
         '/flight': (context) => FlightPage(),
         '/plane': (context) => AirplanePage(),
         '/reservations': (context) => ReservationPage(),
-        '/customer': (context) => CustomerPage(title: "Customer Page"),
       },
+
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
+
+  // This widget is the home page of your application. It is stateful, meaning
+  // that it has a State object (defined below) that contains fields that affect
+  // how it looks.
+
+  // This class is the configuration for the state. It holds the values (in this
+  // case the title) provided by the parent (in this case the App widget) and
+  // used by the build method of the State. Fields in a Widget subclass are
+  // always marked "final".
 
   final String title;
 
@@ -56,6 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late CustomerDAO customerDAO;
   late FlightDAO flightDAO;
   late ReservationDAO reservationDAO;
+
 
   @override
   void initState() {
@@ -72,89 +85,93 @@ class _MyHomePageState extends State<MyHomePage> {
     customerDAO = database.customerDAO;
     flightDAO = database.flightDAO;
     reservationDAO = database.reservationDAO;
+
+    SampleInserts.insertSampleData(airplaneDAO, customerDAO, flightDAO, reservationDAO);
+
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.title),
-        ),
-        body: SingleChildScrollView(
-          child: Center(
-            child: Column(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+
+            const Text(
+              'You have pushed the button this many times:',
+            ),
+            Text(
+              'something',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+
+            //Customers + Airplanes Row
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                //Customers + Airplanes Row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Stack(
+                  alignment: AlignmentDirectional.center,
                   children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, "/customer");
-                      },
-                      child: Stack(
-                        alignment: AlignmentDirectional.center,
-                        children: [
-                          Image.asset("Photos/Customers.png",
-                              height: 200.0, width: 200.0),
-                          Text("Customers",
-                              style: TextStyle(
-                                  fontSize: 30.0, color: Colors.white))
-                        ],
-                      ),
-                    ),
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, "/plane");
-                        },
-                        child: Stack(
-                          alignment: AlignmentDirectional.center,
-                          children: [
-                            Image.asset("Photos/planes.png",
-                                height: 200.0, width: 200.0),
-                            Text("Airplanes",
-                                style: TextStyle(
-                                    fontSize: 30.0, color: Colors.white))
-                          ],
-                        )),
+                    Image.asset("Photos/Customers.png",
+                        height: 200.0, width: 200.0),
+                    Text("Customers",
+                        style: TextStyle(fontSize: 30.0, color: Colors.white))
                   ],
                 ),
-                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, "/flight");
-                      },
-                      child: Stack(
-                        alignment: AlignmentDirectional.center,
-                        children: <Widget>[
-                          Image.asset("Photos/flights.png",
-                              height: 200.0, width: 200.0),
-                          Text("Flights",
-                              style: TextStyle(
-                                  fontSize: 30.0, color: Colors.white))
-                        ],
-                      )),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, "/reservations");
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/plane");
                     },
                     child: Stack(
                       alignment: AlignmentDirectional.center,
-                      children: <Widget>[
-                        Image.asset("Photos/Rez.png",
+                      children: [
+                        Image.asset("Photos/planes.png",
                             height: 200.0, width: 200.0),
-                        Text("Reservations",
+                        Text("Airplanes",
                             style:
-                                TextStyle(fontSize: 30.0, color: Colors.white))
+                            TextStyle(fontSize: 30.0, color: Colors.white))
                       ],
-                    ),
-                  ),
-                ]),
+                    )),
               ],
             ),
-          ),
-        ));
+
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, "/flight");
+                  },
+                  child: Stack(
+                    alignment: AlignmentDirectional.center,
+                    children: <Widget>[
+                      Image.asset("Photos/flights.png",
+                          height: 200.0, width: 200.0),
+                      Text("Flights",
+                          style: TextStyle(fontSize: 30.0, color: Colors.white))
+                    ],
+                  )),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, "/reservations");
+                },
+                child: Stack(
+                  alignment: AlignmentDirectional.center,
+                  children: <Widget>[
+                    Image.asset("Photos/Rez.png", height: 200.0, width: 200.0),
+                    Text("Reservations",
+                        style: TextStyle(fontSize: 30.0, color: Colors.white))
+                  ],
+                ),
+              ),
+            ]),
+
+          ],
+        ),
+      ),
+    );
   }
 }
