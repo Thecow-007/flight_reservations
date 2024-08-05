@@ -185,6 +185,7 @@ class _AirplanePageState extends State<AirplanePage> {
       });
     }
   }
+
   /// Builds the page for adding a new airplane.
   /// Provides text fields for entering airplane details (name, number of passengers,
   /// max speed, range). Includes buttons to add the airplane, copy details from
@@ -369,6 +370,7 @@ class _AirplanePageState extends State<AirplanePage> {
       ),
     );
   }
+
   /// Builds the details page for the selected airplane.
   /// If an airplane is selected, displays its details in editable text fields
   /// and provides buttons to update or delete the airplane.
