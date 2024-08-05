@@ -43,7 +43,6 @@ class _AirplanePageState extends State<AirplanePage> {
   }
 
   /// Loads the airplane database and updates the list of airplanes.
-  ///
   /// Initializes the database connection, retrieves all airplanes from the
   /// database, updates the `allItems` list, and rebuilds the widget tree
   /// to reflect the changes.
@@ -55,7 +54,6 @@ class _AirplanePageState extends State<AirplanePage> {
   }
 
   /// Adds a new airplane to the database.
-  ///
   /// Creates a new [Airplane] object using the values from the input
   /// controllers, inserts it into the database, saves the data using
   /// EncryptedSharedPreferences, clears the input fields, reloads the
@@ -96,11 +94,10 @@ class _AirplanePageState extends State<AirplanePage> {
   }
 
   /// Deletes an airplane from the database.
-  ///
   /// Takes an [Airplane] object as input and attempts to delete it
   /// from the database. If successful, reloads the airplane list,
   /// clears the selected item, and displays a success message.
-  /// If an error occurs (e.g., due to dependencies), shows an error message.
+  /// If an error occurs (due to constraints), shows an error message.
   Future<void> deleteItem(Airplane item) async {
     try {
       await DAO.removeAirplane(item);
@@ -125,7 +122,6 @@ class _AirplanePageState extends State<AirplanePage> {
   }
 
   /// Updates an existing airplane in the database.
-  ///
   /// Takes an [Airplane] object as input and updates its corresponding
   /// entry in the database. After updating, reloads the airplane list
   /// and displays a success message.
@@ -141,7 +137,6 @@ class _AirplanePageState extends State<AirplanePage> {
   }
 
   /// Validates input fields and adds a new airplane.
-  ///
   /// Checks if all required fields are filled. If so, proceeds to add
   /// a new airplane with the entered details. If any field is empty,
   /// displays an error message.
@@ -161,8 +156,7 @@ class _AirplanePageState extends State<AirplanePage> {
     }
   }
 
-  /// /// Validates input fields and updates the selected airplane.
-  ///
+  /// Validates input fields and updates the selected airplane.
   /// Checks if all required fields are filled. If so, updates the selected
   /// airplane with the entered values and clears the selection. If any
   /// field is empty, displays an error message.
@@ -192,7 +186,6 @@ class _AirplanePageState extends State<AirplanePage> {
     }
   }
   /// Builds the page for adding a new airplane.
-  ///
   /// Provides text fields for entering airplane details (name, number of passengers,
   /// max speed, range). Includes buttons to add the airplane, copy details from
   /// the last added airplane, and return to the airplane list.
@@ -304,7 +297,6 @@ class _AirplanePageState extends State<AirplanePage> {
   }
 
   /// Builds the list of airplanes.
-  ///
   /// Displays a scrollable list of airplane cards, each showing basic
   /// information about an airplane. Tapping a card selects the airplane
   /// for viewing or editing details. Also includes a button to add a new airplane.
@@ -378,7 +370,6 @@ class _AirplanePageState extends State<AirplanePage> {
     );
   }
   /// Builds the details page for the selected airplane.
-  ///
   /// If an airplane is selected, displays its details in editable text fields
   /// and provides buttons to update or delete the airplane.
   /// If no airplane is selected, displays a message indicating so.
@@ -572,7 +563,6 @@ class _AirplanePageState extends State<AirplanePage> {
   }
 
   /// Builds the UI for the AirplanePage.
-  ///
   /// Displays either the airplane list, the add airplane page, or the airplane details page
   /// depending on the screen size and user interaction.
   @override

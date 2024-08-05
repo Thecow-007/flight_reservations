@@ -83,5 +83,14 @@
   "Number_of_passengers": "乘客人數",
   "Max_speed": "最高速度",
   "Range": "航程",
-  "Name": "名稱"
+  "Name": "名稱",
+  "Reservation-Name": "預訂姓名",
+  "Select-Customer": "選擇客戶",
+  "Select-Flight": "選擇航班",
+  "Delete-the-Reservation": "刪除預訂",
+  "DYWTDR": "您確定要刪除此預訂嗎？",
+  "No-item-selected": "未選擇任何項目",
+  "Add Reservation": "新增預訂",
+  "Add-New-Reservation": "新增新的預訂",
+  "Reservations": "預訂"
 }
