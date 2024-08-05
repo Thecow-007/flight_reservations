@@ -1,7 +1,8 @@
 import 'package:flight_reservations/Customer.dart';
 import 'package:flight_reservations/CustomerDAO.dart';
 import 'package:flight_reservations/Reservation.dart';
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'Flight.dart';
 import 'FlightDAO.dart';
@@ -24,6 +25,7 @@ class _ReservationState extends State<ReservationPage> {
   late FlightDAO flightDAO;
   late List<Reservation> reservations = [];
   bool _showAddReservation = false;
+  bool isEnglish = true; // Language state
 
   @override
   void initState() {
@@ -39,9 +41,7 @@ class _ReservationState extends State<ReservationPage> {
   }
 
   Future<void> load() async {
-    final database = await $FloorAppDatabase
-        .databaseBuilder('FlightReservations.db')
-        .build();
+    final database = await $FloorAppDatabase.databaseBuilder('FlightReservations.db').build();
 
     reservationDAO = database.reservationDAO;
     customerDAO = database.customerDAO;
@@ -92,8 +92,7 @@ class _ReservationState extends State<ReservationPage> {
                 selectedCustomer = newValue;
               });
             },
-            items: customerList.map<DropdownMenuItem<Customer>>((
-                Customer customer) {
+            items: customerList.map<DropdownMenuItem<Customer>>((Customer customer) {
               return DropdownMenuItem<Customer>(
                 value: customer,
                 child: Text(customer.firstname),
@@ -111,13 +110,13 @@ class _ReservationState extends State<ReservationPage> {
             items: flightList.map<DropdownMenuItem<Flight>>((Flight flight) {
               return DropdownMenuItem<Flight>(
                 value: flight,
-                child: Text(
-                    '${flight.departureCity} to ${flight.destinationCity}'),
+                child: Text('${flight.departureCity} to ${flight.destinationCity}'),
               );
             }).toList(),
           ),
-          ElevatedButton(
-            child: Text("Update"),
+          ElevatedButton.icon(
+            icon: Icon(Icons.update),
+            label: Text("Update"),
             onPressed: () {
               if (selectedCustomer != null && selectedFlight != null) {
                 final updatedReservation = Reservation(
@@ -133,50 +132,50 @@ class _ReservationState extends State<ReservationPage> {
                 });
               }
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+            ),
           ),
-          ElevatedButton(
-            child: Text("Delete"),
+          ElevatedButton.icon(
+            icon: Icon(Icons.delete),
+            label: Text("Delete"),
             onPressed: () {
               setState(() {
                 showDialog<String>(
                   context: context,
-                  builder: (BuildContext context) =>
-                      AlertDialog(
-                        title: const Text('Delete the Reservation'),
-                        content: const Text(
-                            'Do you want to delete this reservation?'),
-                        actions: <Widget>[
-                          ElevatedButton(
-                            onPressed: () {
-                              if (selectedCustomer != null &&
-                                  selectedFlight != null) {
-                                final reservation = reservations.firstWhere(
-                                        (res) =>
-                                    res.customerId == selectedCustomer!.id &&
-                                        res.flightId == selectedFlight!.id &&
-                                        res.date ==
-                                            _reservationNameController.text);
-                                deleteReservation(reservation);
-                                Navigator.pop(context);
-                                setState(() {
-                                  selectedCustomer = null;
-                                  selectedFlight = null;
-                                });
-                              }
-                            },
-                            child: Text("Yes"),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text("No"),
-                          ),
-                        ],
+                  builder: (BuildContext context) => AlertDialog(
+                    title: const Text('Delete the Reservation'),
+                    content: const Text('Do you want to delete this reservation?'),
+                    actions: <Widget>[
+                      ElevatedButton(
+                        onPressed: () {
+                          if (selectedCustomer != null && selectedFlight != null) {
+                            final reservation = reservations.firstWhere(
+                                    (res) => res.customerId == selectedCustomer!.id && res.flightId == selectedFlight!.id && res.date == _reservationNameController.text);
+                            deleteReservation(reservation);
+                            Navigator.pop(context);
+                            setState(() {
+                              selectedCustomer = null;
+                              selectedFlight = null;
+                            });
+                          }
+                        },
+                        child: Text("Yes"),
                       ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text("No"),
+                      ),
+                    ],
+                  ),
                 );
               });
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
           ),
         ],
       );
@@ -214,8 +213,7 @@ class _ReservationState extends State<ReservationPage> {
                   selectedCustomer = newValue;
                 });
               },
-              items: customerList.map<DropdownMenuItem<Customer>>((
-                  Customer customer) {
+              items: customerList.map<DropdownMenuItem<Customer>>((Customer customer) {
                 return DropdownMenuItem<Customer>(
                   value: customer,
                   child: Text(customer.firstname),
@@ -237,14 +235,14 @@ class _ReservationState extends State<ReservationPage> {
               items: flightList.map<DropdownMenuItem<Flight>>((Flight flight) {
                 return DropdownMenuItem<Flight>(
                   value: flight,
-                  child: Text(
-                      '${flight.departureCity} to ${flight.destinationCity}'),
+                  child: Text('${flight.departureCity} to ${flight.destinationCity}'),
                 );
               }).toList(),
             ),
             SizedBox(height: 8.0),
-            ElevatedButton(
-              child: Text("Add Reservation"),
+            ElevatedButton.icon(
+              icon: Icon(Icons.add),
+              label: Text("Add Reservation"),
               onPressed: () {
                 insertReservation();
                 setState(() {
@@ -254,9 +252,13 @@ class _ReservationState extends State<ReservationPage> {
                   _showAddReservation = false;
                 });
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+              ),
             ),
-            ElevatedButton(
-              child: Text("Cancel"),
+            ElevatedButton.icon(
+              icon: Icon(Icons.cancel),
+              label: Text("Cancel"),
               onPressed: () {
                 setState(() {
                   _reservationNameController.text = "";
@@ -265,6 +267,9 @@ class _ReservationState extends State<ReservationPage> {
                   _showAddReservation = false;
                 });
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey,
+              ),
             ),
           ],
         ),
@@ -276,8 +281,9 @@ class _ReservationState extends State<ReservationPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        ElevatedButton(
-          child: Text("Add New Reservation"),
+        ElevatedButton.icon(
+          icon: Icon(Icons.add),
+          label: Text("Add New Reservation"),
           onPressed: () {
             setState(() {
               _reservationNameController.text = '';
@@ -286,6 +292,9 @@ class _ReservationState extends State<ReservationPage> {
               _showAddReservation = true;
             });
           },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+          ),
         ),
         Expanded(
           child: ListView.builder(
@@ -304,14 +313,9 @@ class _ReservationState extends State<ReservationPage> {
                 ),
                 onTap: () {
                   setState(() {
-                    selectedCustomer = customerList.firstWhere(
-                            (customer) =>
-                        customer.id == reservations[rowNum].customerId);
-                    selectedFlight = flightList.firstWhere(
-                            (flight) =>
-                        flight.id == reservations[rowNum].flightId);
-                    _reservationNameController.text =
-                        reservations[rowNum].date;
+                    selectedCustomer = customerList.firstWhere((customer) => customer.id == reservations[rowNum].customerId);
+                    selectedFlight = flightList.firstWhere((flight) => flight.id == reservations[rowNum].flightId);
+                    _reservationNameController.text = reservations[rowNum].date;
                   });
                 },
               );
@@ -322,11 +326,15 @@ class _ReservationState extends State<ReservationPage> {
     );
   }
 
+  void toggleLanguage() {
+    setState(() {
+      isEnglish = !isEnglish;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery
-        .of(context)
-        .size;
+    var size = MediaQuery.of(context).size;
     var height = size.height;
     var width = size.width;
 
@@ -354,12 +362,33 @@ class _ReservationState extends State<ReservationPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme
-            .of(context)
-            .colorScheme
-            .inversePrimary,
+        title: Text('Reservations'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.language),
+            onPressed: toggleLanguage,
+          ),
+        ],
       ),
       body: display,
     );
   }
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('en', ''), // English
+        Locale('zh', ''), // Chinese
+      ],
+      home: ReservationPage(),
+    ),
+  );
 }
