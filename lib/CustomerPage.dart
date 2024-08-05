@@ -10,23 +10,36 @@ void main() {
   runApp(const MyApp());
 }
 
+/// The root widget of the application.
+///
+/// This widget sets up the [MaterialApp] and manages locale changes
+/// using the [setLocal] method.
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
 
+  /// Changes the locale of the application.
+  ///
+  /// This method is used to update the locale of the app at runtime.
+  ///
+  /// [context] The [BuildContext] to find the state of the application.
+  /// [locale] The new [Locale] to set.
   static void setLocal(BuildContext context, Locale locale){
     _MyAppState? state = context.findAncestorStateOfType<_MyAppState>();
     state?.setLocale(locale);
   }
 }
 
-
-
 class _MyAppState extends State<MyApp> {
   Locale _locale = const Locale('en');
 
+  /// Sets the locale of the application.
+  ///
+  /// Updates the state to change the locale.
+  ///
+  /// [locale] The new [Locale] to set.
   void setLocale(Locale locale) {
     setState(() {
       _locale = locale;
@@ -58,6 +71,11 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
+/// A page that displays a list of customers and allows the user
+/// to add, edit, and manage customer records.
+///
+/// It also handles localization and interacts with encrypted shared preferences
+/// for storing temporary data.
 class CustomerPage extends StatefulWidget {
   const CustomerPage({super.key, required this.setLocale});
   final String title = "Customer Page";
@@ -75,7 +93,7 @@ class CustomerPageState extends State<CustomerPage> {
   final TextEditingController addressController = TextEditingController();
   DateTime? birthday;
 
-  // Declaration of translation variables
+  // Translation variables
   late String customerTitle;
   late String customersText;
   late String addCustomerText;
@@ -88,8 +106,6 @@ class CustomerPageState extends State<CustomerPage> {
   late String updateText;
   late String deleteText;
   late String recordUpdatedText;
-
-
 
   var CustomerDAO;
   final _encryptedPrefs = EncryptedSharedPreferences();
@@ -109,6 +125,10 @@ class CustomerPageState extends State<CustomerPage> {
     super.dispose();
   }
 
+  /// Loads the customer data from the database.
+  ///
+  /// This method asynchronously builds the database and retrieves
+  /// all customer records.
   void loadDatabase() async {
     final database = await $FloorAppDatabase.databaseBuilder('FlightReservations.db').build();
     CustomerDAO = database.customerDAO;
@@ -116,6 +136,10 @@ class CustomerPageState extends State<CustomerPage> {
     setState(() {});
   }
 
+  /// Adds a new customer to the list.
+  ///
+  /// The method checks if all required fields are filled and then adds
+  /// a new [Customer] to the list. The fields are then cleared.
   void addCustomer() {
     if (firstNameController.text.isEmpty ||
         lastNameController.text.isEmpty ||
@@ -135,6 +159,7 @@ class CustomerPageState extends State<CustomerPage> {
     });
   }
 
+  /// Clears all input fields and resets the birthday.
   void clearFields() {
     firstNameController.clear();
     lastNameController.clear();
@@ -142,6 +167,7 @@ class CustomerPageState extends State<CustomerPage> {
     birthday = null;
   }
 
+  /// Copies the details of the selected customer to the input fields.
   void copyCustomer() {
     if (selectedCustomer != null) {
       firstNameController.text = selectedCustomer!.firstname;
@@ -151,6 +177,9 @@ class CustomerPageState extends State<CustomerPage> {
     }
   }
 
+  /// Saves data to encrypted shared preferences.
+  ///
+  /// The data includes the first name, last name, address, and birthday.
   void saveData() async {
     await _encryptedPrefs.setString('firstName', firstNameController.text);
     await _encryptedPrefs.setString('lastName', lastNameController.text);
@@ -160,6 +189,10 @@ class CustomerPageState extends State<CustomerPage> {
     }
   }
 
+  /// Loads saved data from encrypted shared preferences.
+  ///
+  /// Retrieves the first name, last name, address, and birthday from preferences
+  /// and updates the input fields.
   void loadSavedData() async {
     String? firstName = await _encryptedPrefs.getString('firstName');
     String? lastName = await _encryptedPrefs.getString('lastName');
@@ -201,7 +234,7 @@ class CustomerPageState extends State<CustomerPage> {
               Locale newLocale = Localizations.localeOf(context).languageCode == 'en'
                   ? Locale('zh', 'CN')
                   : Locale('en');
-              widget.setLocale(newLocale); //this line *********
+              widget.setLocale(newLocale);
             },
           ),
         ],
@@ -212,7 +245,7 @@ class CustomerPageState extends State<CustomerPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               // Title Row
-                Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
@@ -284,111 +317,114 @@ class CustomerPageState extends State<CustomerPage> {
     );
   }
 
+  /// Builds a list of customers.
+  ///
+  /// Displays each customer in a [ListTile] and allows interaction with
+  /// each item, including long press to edit or delete.
   Widget CustomerList() {
     return ListView.builder(
-        shrinkWrap: true,
-        itemCount: customers.length,
-        itemBuilder: (context, index) {
-      return GestureDetector(
+      shrinkWrap: true,
+      itemCount: customers.length,
+      itemBuilder: (context, index) {
+        return GestureDetector(
           onTap: () {
-        selectedCustomer = customers[index];
-      },
-    onLongPress: () {
-    showDialog(
-    context: context,
-    builder: (BuildContext context) {
-    final TextEditingController firstNameController =
-    TextEditingController(text: customers[index].firstname);
-    final TextEditingController lastNameController =
-    TextEditingController(text: customers[index].lastname);
-    final TextEditingController addressController =
-    TextEditingController(text: customers[index].address);
-    DateTime? birthday = DateFormat('yyyy-MM-dd')
-        .parse(customers[index].birthday);
+            selectedCustomer = customers[index];
+          },
+          onLongPress: () {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  final TextEditingController firstNameController =
+                  TextEditingController(text: customers[index].firstname);
+                  final TextEditingController lastNameController =
+                  TextEditingController(text: customers[index].lastname);
+                  final TextEditingController addressController =
+                  TextEditingController(text: customers[index].address);
+                  DateTime? birthday = DateFormat('yyyy-MM-dd')
+                      .parse(customers[index].birthday);
 
-    return AlertDialog(
-    title: Text(editCustomerText),
-    content: Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-    TextField(
-    controller: firstNameController,
-    decoration: InputDecoration(hintText: firstNameText),
-    ),
-    TextField(
-    controller:                          lastNameController,
-      decoration: InputDecoration(hintText: lastNameText),
-    ),
-      TextField(
-        controller: addressController,
-        decoration: InputDecoration(hintText: addressText),
-      ),
-      ElevatedButton(
-        onPressed: () async {
-          DateTime? picked = await showDatePicker(
-              context: context,
-              initialDate: birthday ?? DateTime.now(),
-              firstDate: DateTime(1900),
-              lastDate: DateTime(2100));
-          if (picked != null && picked != birthday) {
-            setState(() {
-              birthday = picked;
-            });
-          }
-        },
-        child: Text(birthdayText),
-      ),
-    ],
-    ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            setState(() {
-              customers[index] = Customer(
-                null,
-                firstNameController.text,
-                lastNameController.text,
-                addressController.text,
-                DateFormat('yyyy-MM-dd').format(birthday!),
-              );
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(recordUpdatedText)),
-              );
-            });
-            Navigator.of(context).pop();
+                  return AlertDialog(
+                    title: Text(editCustomerText),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextField(
+                          controller: firstNameController,
+                          decoration: InputDecoration(hintText: firstNameText),
+                        ),
+                        TextField(
+                          controller:                          lastNameController,
+                          decoration: InputDecoration(hintText: lastNameText),
+                        ),
+                        TextField(
+                          controller: addressController,
+                          decoration: InputDecoration(hintText: addressText),
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            DateTime? picked = await showDatePicker(
+                                context: context,
+                                initialDate: birthday ?? DateTime.now(),
+                                firstDate: DateTime(1900),
+                                lastDate: DateTime(2100));
+                            if (picked != null && picked != birthday) {
+                              setState(() {
+                                birthday = picked;
+                              });
+                            }
+                          },
+                          child: Text(birthdayText),
+                        ),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            customers[index] = Customer(
+                              null,
+                              firstNameController.text,
+                              lastNameController.text,
+                              addressController.text,
+                              DateFormat('yyyy-MM-dd').format(birthday!),
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(recordUpdatedText)),
+                            );
+                          });
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(updateText),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            customers.removeAt(index);
+                          });
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(deleteText),
+                      ),
+                    ],
+                  );
+                });
           },
-          child: Text(updateText),
-        ),
-        TextButton(
-          onPressed: () {
-            setState(() {
-              customers.removeAt(index);
-            });
-            Navigator.of(context).pop();
-          },
-          child: Text(deleteText),
-        ),
-      ],
-    );
-    });
-    },
-        child: ListTile(
-          title: Text(
-            '${customers[index].firstname} ${customers[index].lastname}',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          child: ListTile(
+            title: Text(
+              '${customers[index].firstname} ${customers[index].lastname}',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(customers[index].address,
+                    style: TextStyle(decoration: TextDecoration.underline)),
+                Text(customers[index].birthday),
+              ],
+            ),
           ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(customers[index].address,
-                  style: TextStyle(decoration: TextDecoration.underline)),
-              Text(customers[index].birthday),
-            ],
-          ),
-        ),
-      );
-        },
+        );
+      },
     );
   }
 }
-

@@ -1,3 +1,4 @@
+
 import 'package:flight_reservations/AirplaneDAO.dart';
 import 'package:flight_reservations/CustomerDAO.dart';
 import 'package:flight_reservations/DBConnection.dart';
@@ -109,11 +110,18 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     // Initialize translation variables
-    flightReservationsTitle = AppLocalizations.of(context)?.translate('flightReservations') ?? 'Flight Reservations';
-    customersTitle = AppLocalizations.of(context)?.translate('customers') ?? 'Customers';
-    airplanesTitle = AppLocalizations.of(context)?.translate('airplanes') ?? 'Airplanes';
-    flightsTitle = AppLocalizations.of(context)?.translate('flights') ?? 'Flights';
-    reservationsTitle = AppLocalizations.of(context)?.translate('reservations') ?? 'Reservations';
+    flightReservationsTitle =
+        AppLocalizations.of(context)?.translate('flightReservations') ??
+            'Flight Reservations';
+    customersTitle =
+        AppLocalizations.of(context)?.translate('customers') ?? 'Customers';
+    airplanesTitle =
+        AppLocalizations.of(context)?.translate('airplanes') ?? 'Airplanes';
+    flightsTitle =
+        AppLocalizations.of(context)?.translate('flights') ?? 'Flights';
+    reservationsTitle =
+        AppLocalizations.of(context)?.translate('reservations') ??
+            'Reservations';
 
     debugPaintSizeEnabled = false;
 
@@ -125,9 +133,10 @@ class _MyHomePageState extends State<MyHomePage> {
           IconButton(
             icon: Icon(Icons.language),
             onPressed: () {
-              Locale newLocale = Localizations.localeOf(context).languageCode == 'en'
-                  ? Locale('zh', 'CN')
-                  : Locale('en');
+              Locale newLocale =
+                  Localizations.localeOf(context).languageCode == 'en'
+                      ? Locale('zh', 'CN')
+                      : Locale('en');
               widget.setLocale(newLocale);
             },
           ),
@@ -203,8 +212,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           ],
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () {
+                      ElevatedButton(
+                        onPressed: () {
                           Navigator.pushNamed(context, "/reservations");
                         },
                         child: Stack(
@@ -219,7 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             )
                           ],
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ],
