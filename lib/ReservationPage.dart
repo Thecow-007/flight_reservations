@@ -9,11 +9,13 @@ import 'FlightDAO.dart';
 import 'ReservationDAO.dart';
 import 'database.dart';
 
+/// The main widget for the reservation page.
 class ReservationPage extends StatefulWidget {
   @override
   State<ReservationPage> createState() => _ReservationState();
 }
 
+/// The state for the [ReservationPage] widget.
 class _ReservationState extends State<ReservationPage> {
   late TextEditingController _reservationNameController;
   Customer? selectedCustomer;
@@ -40,6 +42,7 @@ class _ReservationState extends State<ReservationPage> {
     super.dispose();
   }
 
+  /// Loads the initial data from the database.
   Future<void> load() async {
     final database = await $FloorAppDatabase.databaseBuilder('FlightReservations.db').build();
 
@@ -53,6 +56,7 @@ class _ReservationState extends State<ReservationPage> {
     setState(() {});
   }
 
+  /// Inserts a new reservation into the database.
   Future<void> insertReservation() async {
     if (selectedCustomer != null && selectedFlight != null) {
       final reservation = Reservation(
@@ -66,16 +70,23 @@ class _ReservationState extends State<ReservationPage> {
     }
   }
 
+  /// Deletes a reservation from the database.
+  ///
+  /// [reservation] - The reservation to delete.
   Future<void> deleteReservation(Reservation reservation) async {
     await reservationDAO.removeReservation(reservation);
     await load();
   }
 
+  /// Updates an existing reservation in the database.
+  ///
+  /// [reservation] - The reservation to update.
   Future<void> updateReservation(Reservation reservation) async {
     await reservationDAO.insertReservation(reservation);
     await load();
   }
 
+  /// Builds the details page for a selected reservation.
   Widget DetailsPage() {
     if (selectedCustomer != null && selectedFlight != null) {
       return Column(
@@ -187,6 +198,7 @@ class _ReservationState extends State<ReservationPage> {
     );
   }
 
+  /// Builds the UI for adding a new reservation.
   Widget AddReservation() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -277,6 +289,7 @@ class _ReservationState extends State<ReservationPage> {
     );
   }
 
+  /// Builds the list of reservations.
   Widget ReservationList() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -326,6 +339,7 @@ class _ReservationState extends State<ReservationPage> {
     );
   }
 
+  /// Toggles the language between English and Chinese.
   void toggleLanguage() {
     setState(() {
       isEnglish = !isEnglish;
