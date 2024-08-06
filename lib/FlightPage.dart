@@ -650,18 +650,18 @@ class FlightState extends State<FlightPage> {
                     _departureTime = null;
                     _arrivalTime = null;
                     selectedAirplane = null;
-                    _showAddFlight = false;
+                    _showAddFlight = true;
                   });
                   EncryptedSharedPreferences prefs =
                       EncryptedSharedPreferences();
                   final encryptedResult = await prefs.getInstance();
                   var departureCity =
-                      encryptedResult.getString("departureCity");
+                      encryptedResult.getString("departureCity")??'';
                   var destinationCity =
-                      encryptedResult.getString("destinationCity");
+                      encryptedResult.getString("destinationCity")??'';
 
-                  if (departureCity!.isNotEmpty ||
-                      destinationCity!.isNotEmpty) {
+                  if (departureCity.isNotEmpty ||
+                      destinationCity.isNotEmpty) {
                     showDialog<String>(
                       context: context,
                       builder: (BuildContext context) => AlertDialog(
@@ -692,9 +692,6 @@ class FlightState extends State<FlightPage> {
                         ],
                       ),
                     );
-                    setState(() {
-                      _showAddFlight = true;
-                    });
                   }
                 },
               ),
